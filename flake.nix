@@ -81,7 +81,8 @@
               paths = defaultPackages;
             }}"
             export TEST_APP_PATHS="${test-app-android}/bin/test-app-android:${test-app-web}"
-            cd ${./tests}
+            cp -r ${./tests}/* "$TMPDIR/"
+            cd "$TMPDIR"
             bash smoke.sh
             cp -r test-logs "$out"
           '';
