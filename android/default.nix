@@ -101,6 +101,22 @@ python3Packages.buildPythonApplication rec {
   postFixup = ''
     wrapProgram $out/bin/android-mcp \
       --prefix PATH : ${pkgs.android-tools}/bin
+
+    # Install check script and create outer wrapper that intercepts --check
+    install -Dm755 ${./check.sh} $out/libexec/android-mcp-check.sh
+
+    # wrapProgram already created .android-mcp-wrapped (original) and
+    # android-mcp (env wrapper). Rename the env wrapper and add our shim.
+    mv $out/bin/android-mcp $out/bin/.android-mcp-launch
+    cat > $out/bin/android-mcp <<'WRAPPER'
+#!/usr/bin/env bash
+export PATH="${pkgs.android-tools}/bin:''${PATH:-}"
+if [ "''${1:-}" = "--check" ]; then
+  exec "$(dirname "$0")/../libexec/android-mcp-check.sh"
+fi
+exec "$(dirname "$0")/.android-mcp-launch" "$@"
+WRAPPER
+    chmod +x $out/bin/android-mcp
   '';
 
   # Tests require a connected Android device

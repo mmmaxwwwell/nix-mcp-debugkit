@@ -21,3 +21,7 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 - `uiautomator2` uses `poetry-dynamic-versioning` as build backend; patch pyproject.toml to use plain `poetry-core` since version is already set in the sdist.
 - `adbutils` uses `pbr` for builds; set `PBR_VERSION = version;` to avoid git-based version detection in the Nix sandbox.
 
+## T006 — android/check.sh
+- `wrapProgram` renames the original binary to `.android-mcp-wrapped` and creates a new wrapper script. To add a `--check` shim, rename the wrapProgram output to `.android-mcp-launch` and create a new outer wrapper.
+- The outer wrapper must re-set PATH (e.g., `android-tools/bin`) since exec-ing check.sh bypasses the wrapProgram environment setup.
+

@@ -30,7 +30,7 @@
   Use `buildPythonApplication` to package `android-mcp` from PyPI at exact pinned version. Determine current version from PyPI. Use `makeWrapper` to prepend `android-tools/bin` (adb) to PATH. Entry point: the upstream `android-mcp` console script. All CLI args pass through. Add `meta.description` and `meta.license`.
   Done when: `nix build .#mcp-android` succeeds; `result/bin/mcp-android` exists; `ldd` or `file` confirms it's a wrapper script; `strings result/bin/mcp-android | grep adb` confirms adb path wiring
 
-- [ ] T006 Create android/check.sh — pre-flight diagnostics [FR-015] [produces: IC-003]
+- [x] T006 Create android/check.sh — pre-flight diagnostics [FR-015] [produces: IC-003]
   Shell script implementing `--check` for android: (1) verify `adb` binary on PATH and executable → ✓/✗, (2) run `adb devices` and check for at least one non-header line → ✓ with device list / ✗ with remediation "Start an emulator: emulator -avd <name> -no-window". Exit 0 if all pass, exit 1 if any fail. Wire into the mcp-android wrapper: if `$1 == "--check"`, exec check.sh instead of upstream.
   Done when: `mcp-android --check` runs without crashing (will show ✗ for device without emulator); output matches IC-003 format; `shellcheck android/check.sh` passes
 
