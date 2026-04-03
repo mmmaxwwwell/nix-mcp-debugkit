@@ -86,7 +86,7 @@
   E2E orchestrator that: (1) creates/boots headless Android emulator via androidenv.emulateApp or directly via emulator command (x86_64, API 34, -no-window -gpu swiftshader_indirect), (2) waits for boot (`adb shell getprop sys.boot_completed` == 1, 120s timeout), (3) waits for package manager ready (pm list packages count > 50, 300s), (4) installs test APK via `adb install`, (5) launches app via `adb shell am start -n com.nixmcpdebugkit.testapp/.MainActivity`, (6) starts mcp-android server, (7) exercises MCP tools: screenshot (verify base64 PNG), click btn_tap (verify counter becomes "Count: 1" via state read), type "hello" in input_text (verify text via state read), swipe list_items (verify scroll position changes), read accessibility tree (verify expected element IDs), (8) writes structured results per IC-002, (9) cleanup: kill emulator + MCP server on EXIT trap.
   Done when: android-e2e.sh passes with KVM; `test-logs/android/summary.json` shows pass > 0, fail == 0; all 5 MCP tool categories tested
 
-- [ ] T016 Wire android E2E into flake.nix checks [FR-007]
+- [x] T016 Wire android E2E into flake.nix checks [FR-007]
   Add `checks.${system}.android-e2e` that runs android-e2e.sh. Only enable on Linux (requires KVM). The check derivation must have access to android-tools, the emulator, and the test APK.
   Done when: `nix flake check` includes android-e2e on Linux; check passes on KVM-enabled system
 

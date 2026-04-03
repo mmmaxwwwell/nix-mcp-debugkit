@@ -29,3 +29,7 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 ## T015 — tests/android-e2e.sh
 - android-mcp (PyPI) uses FastMCP and uiautomator2. The MCP tool names may vary; the E2E script tries multiple tool name variants (click/tap, dump_hierarchy/get_screen_info, type/set_text) with fallbacks.
 - AVD creation can be done via manual INI files when `avdmanager` is not on PATH (common in Nix where only the emulator + system image are provided). The key fields are `image.sysdir.1` pointing at the system image and `hw.cpu.arch=x86_64`.
+
+## T016 — Wire android E2E into flake.nix checks
+- Use `requiredSystemFeatures = [ "kvm" ]` on the check derivation so Nix only runs it on builders with KVM support. Combined with `lib.optionalAttrs (!isDarwin)` to restrict to Linux.
+- The emulator SDK needs a separate `composeAndroidPackages` call with `includeEmulator = true`, `includeSystemImages = true`, `systemImageTypes = [ "default" ]`, and `abiVersions = [ "x86_64" ]` — the test-app-android composition omits these to keep build times minimal.

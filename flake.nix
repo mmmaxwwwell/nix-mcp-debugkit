@@ -29,6 +29,19 @@
           echo "<html><body>placeholder</body></html>" > $out/index.html
         '';
 
+        # Android emulator SDK (for E2E tests — Linux only)
+        androidEmulatorComposition = pkgs.androidenv.composeAndroidPackages {
+          platformVersions = [ "34" ];
+          buildToolsVersions = [ "34.0.0" ];
+          includeEmulator = true;
+          includeSystemImages = true;
+          systemImageTypes = [ "default" ];
+          abiVersions = [ "x86_64" ];
+          includeNDK = false;
+          includeSources = false;
+        };
+        androidEmulatorSdk = androidEmulatorComposition.androidsdk;
+
         # Default package: symlinkJoin of all platform-appropriate packages
         defaultPackages =
           if isDarwin
@@ -83,6 +96,27 @@
             cp -r ${./tests}/* "$TMPDIR/"
             cd "$TMPDIR"
             bash smoke.sh
+            cp -r test-logs "$out"
+          '';
+        } // pkgs.lib.optionalAttrs (!isDarwin) {
+          android-e2e = pkgs.runCommand "android-e2e" {
+            nativeBuildInputs = [
+              pkgs.bash
+              pkgs.jq
+              pkgs.android-tools
+              androidEmulatorSdk
+              mcp-android
+              test-app-android
+            ];
+            requiredSystemFeatures = [ "kvm" ];
+          } ''
+            export HOME="$TMPDIR"
+            export TEST_APK_PATH="${test-app-android}/test-app-android.apk"
+            export ANDROID_SDK_ROOT="${androidEmulatorSdk}/libexec/android-sdk"
+            export EMULATOR_BIN="${androidEmulatorSdk}/libexec/android-sdk/emulator/emulator"
+            cp -r ${./tests}/* "$TMPDIR/"
+            cd "$TMPDIR"
+            bash android-e2e.sh
             cp -r test-logs "$out"
           '';
         };
