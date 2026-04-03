@@ -68,7 +68,7 @@
   Shell script: (1) verify `xcrun simctl list` succeeds → ✓/✗ "Xcode CLI tools not found → install with xcode-select --install", (2) check for at least one simulator → ✓ with list / ✗ "No simulators found → create with xcrun simctl create". Exit code per IC-003.
   Done when: check.sh script exists; `shellcheck ios/check.sh` passes; output matches IC-003 format
 
-- [ ] T013 Wire iOS package into flake.nix [FR-003, FR-004, FR-005]
+- [x] T013 Wire iOS package into flake.nix [FR-003, FR-004, FR-005]
   Add `packages.${system}.mcp-ios` to flake outputs (darwin only — conditional in eachDefaultSystem). Add to overlays.default (darwin only). Add to default package (darwin only). Update smoke tests (skip iOS smoke on non-darwin).
   Done when: `nix flake show` lists mcp-ios on darwin; default package on Linux does NOT include mcp-ios
 

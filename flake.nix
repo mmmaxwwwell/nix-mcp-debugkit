@@ -11,6 +11,8 @@
       let
         pkgs = import nixpkgs { inherit system; };
 
+        inherit (pkgs.stdenv) isDarwin;
+
         # Real packages
         mcp-android = import ./android { inherit pkgs; };
         mcp-browser = import ./browser { inherit pkgs; };
@@ -28,17 +30,19 @@
 
         # Default package: symlinkJoin of all platform-appropriate packages
         defaultPackages =
-          if pkgs.stdenv.isDarwin
+          if isDarwin
           then [ mcp-browser mcp-ios ]
           else [ mcp-android mcp-browser ];
 
       in {
         packages = {
-          inherit mcp-android mcp-browser mcp-ios test-app-android test-app-web;
+          inherit mcp-android mcp-browser test-app-android test-app-web;
           default = pkgs.symlinkJoin {
             name = "nix-mcp-debugkit";
             paths = defaultPackages;
           };
+        } // pkgs.lib.optionalAttrs isDarwin {
+          inherit mcp-ios;
         };
 
         devShells.default = pkgs.mkShell {
@@ -64,8 +68,9 @@
               pkgs.shellcheck
               mcp-android
               mcp-browser
-              mcp-ios
               test-app-android
+            ] ++ pkgs.lib.optionals isDarwin [
+              mcp-ios
             ];
           } ''
             export HOME="$TMPDIR"
@@ -84,7 +89,9 @@
     ) // {
       overlays.default = _final: prev:
         let sys = prev.stdenv.hostPlatform.system; in {
-          inherit (self.packages.${sys}) mcp-android mcp-browser mcp-ios;
+          inherit (self.packages.${sys}) mcp-android mcp-browser;
+        } // prev.lib.optionalAttrs prev.stdenv.isDarwin {
+          inherit (self.packages.${sys}) mcp-ios;
         };
     };
 }

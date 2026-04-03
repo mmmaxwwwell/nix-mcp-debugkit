@@ -25,3 +25,7 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 - `ios-simulator-mcp` 1.5.2 entry point is `build/index.js` (not `cli.js` like playwright). The bin field maps `ios-simulator-mcp` to `build/index.js`.
 - Inside `meta = with pkgs.lib; { ... }`, use `platforms.darwin` (not `lib.platforms.darwin`) since `with` already brings `lib` attrs into scope.
 - Wiring into flake.nix (replacing placeholder) is needed in the package task itself to satisfy done-when criteria — consistent with T008/T010 pattern.
+
+## T013 — Wire iOS into flake.nix (darwin-only)
+- T011 wired mcp-ios unconditionally; T013's real work is making it darwin-conditional using `lib.optionalAttrs isDarwin` for packages/overlays and `lib.optionals isDarwin` for list inputs (smoke test nativeBuildInputs).
+- In overlays (outside `eachDefaultSystem`), use `prev.lib` and `prev.stdenv.isDarwin` since `pkgs` isn't in scope — `prev` is the nixpkgs being overlaid.
