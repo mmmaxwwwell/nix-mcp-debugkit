@@ -52,7 +52,7 @@
   Shell script: (1) verify PLAYWRIGHT_BROWSERS_PATH is set and directory exists → ✓/✗, (2) find Chromium binary and attempt headless launch (`chromium --headless --disable-gpu --dump-dom about:blank`) → ✓ with version / ✗ with error details. Exit code per IC-003.
   Done when: `mcp-browser --check` reports Chromium version; output matches IC-003 format; `shellcheck browser/check.sh` passes
 
-- [ ] T010 Wire browser package into flake.nix [FR-002, FR-004, FR-005]
+- [~] T010 Wire browser package into flake.nix [FR-002, FR-004, FR-005] — already completed by T008 (flake.nix already has mcp-browser in packages, overlays, default symlinkJoin, and smoke tests)
   Add `packages.${system}.mcp-browser` to flake outputs for all systems. Add to overlays.default. Add to default package. Update smoke tests.
   Done when: `nix flake show` lists mcp-browser; `nix build .#mcp-browser` succeeds; smoke test for browser passes
 
