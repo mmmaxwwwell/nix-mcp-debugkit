@@ -29,3 +29,6 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 ## T013 — Wire iOS into flake.nix (darwin-only)
 - T011 wired mcp-ios unconditionally; T013's real work is making it darwin-conditional using `lib.optionalAttrs isDarwin` for packages/overlays and `lib.optionals isDarwin` for list inputs (smoke test nativeBuildInputs).
 - In overlays (outside `eachDefaultSystem`), use `prev.lib` and `prev.stdenv.isDarwin` since `pkgs` isn't in scope — `prev` is the nixpkgs being overlaid.
+
+## phase4-ios-package-p-fix1 — Smoke test platform skip
+- T013 made mcp-ios darwin-only in flake.nix but the smoke test's "binary exists" loop used `test_fail` for missing binaries. The `--check` and `--help` loops already handled missing binaries with `test_skip`, but the first loop needed an explicit platform check to skip mcp-ios on non-darwin instead of failing.

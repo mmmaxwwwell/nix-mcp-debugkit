@@ -12,7 +12,17 @@ start_test_run "smoke"
 
 # --- Package binaries exist and are executable ---
 
+is_darwin=false
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  is_darwin=true
+fi
+
 for pkg in mcp-android mcp-browser mcp-ios; do
+  # mcp-ios is darwin-only; skip on other platforms
+  if [[ "$pkg" == "mcp-ios" ]] && ! $is_darwin; then
+    test_skip "$pkg binary exists and is executable" "darwin-only package"
+    continue
+  fi
   bin=$(command -v "$pkg" 2>/dev/null || true)
   if [[ -n "$bin" && -x "$bin" ]]; then
     test_pass "$pkg binary exists and is executable"
@@ -61,11 +71,6 @@ done
 # --- Default package contains correct packages per platform ---
 
 if [[ -n "${DEFAULT_PKG_PATH:-}" ]]; then
-  is_darwin=false
-  if [[ "$(uname -s)" == "Darwin" ]]; then
-    is_darwin=true
-  fi
-
   if $is_darwin; then
     expected_bins=("mcp-browser" "mcp-ios")
     unexpected_bins=("mcp-android")

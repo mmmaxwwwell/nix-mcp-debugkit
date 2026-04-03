@@ -72,6 +72,8 @@
   Add `packages.${system}.mcp-ios` to flake outputs (darwin only — conditional in eachDefaultSystem). Add to overlays.default (darwin only). Add to default package (darwin only). Update smoke tests (skip iOS smoke on non-darwin).
   Done when: `nix flake show` lists mcp-ios on darwin; default package on Linux does NOT include mcp-ios
 
+- [x] phase4-ios-package-p-fix1 Fix phase validation failure: read specs/nix-mcp-debugkit/validate/phase4-ios-package-p/ for failure history
+
 ---
 
 ## Phase 5: Android Test App + E2E
