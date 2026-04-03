@@ -17,6 +17,19 @@ pkgs.buildNpmPackage rec {
     mkdir -p $out/bin
     makeWrapper ${pkgs.nodejs}/bin/node $out/bin/mcp-ios \
       --add-flags "$out/lib/node_modules/mcp-ios/node_modules/ios-simulator-mcp/build/index.js"
+
+    # Install check script and create outer wrapper that intercepts --check
+    install -Dm755 ${./check.sh} $out/libexec/mcp-ios-check.sh
+
+    mv $out/bin/mcp-ios $out/bin/.mcp-ios-launch
+    cat > $out/bin/mcp-ios <<'WRAPPER'
+#!${pkgs.bash}/bin/bash
+if [ "''${1:-}" = "--check" ]; then
+  exec ${pkgs.bash}/bin/bash "$(dirname "$0")/../libexec/mcp-ios-check.sh"
+fi
+exec "$(dirname "$0")/.mcp-ios-launch" "$@"
+WRAPPER
+    chmod +x $out/bin/mcp-ios
   '';
 
   meta = with pkgs.lib; {
