@@ -34,7 +34,7 @@
   Shell script implementing `--check` for android: (1) verify `adb` binary on PATH and executable → ✓/✗, (2) run `adb devices` and check for at least one non-header line → ✓ with device list / ✗ with remediation "Start an emulator: emulator -avd <name> -no-window". Exit 0 if all pass, exit 1 if any fail. Wire into the mcp-android wrapper: if `$1 == "--check"`, exec check.sh instead of upstream.
   Done when: `mcp-android --check` runs without crashing (will show ✗ for device without emulator); output matches IC-003 format; `shellcheck android/check.sh` passes
 
-- [ ] T007 Wire android package into flake.nix [FR-001, FR-004, FR-005]
+- [~] T007 Wire android package into flake.nix [FR-001, FR-004, FR-005] — already completed by T005 (flake.nix already has mcp-android in packages, overlays, default symlinkJoin, and smoke tests)
   Add `packages.${system}.mcp-android` to flake outputs for Linux + darwin. Add to overlays.default. Add to default package symlinkJoin. Update smoke tests to verify android package.
   Done when: `nix flake show` lists mcp-android; `nix build .#mcp-android` succeeds; smoke test for android passes
 

@@ -25,3 +25,6 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 - `wrapProgram` renames the original binary to `.android-mcp-wrapped` and creates a new wrapper script. To add a `--check` shim, rename the wrapProgram output to `.android-mcp-launch` and create a new outer wrapper.
 - The outer wrapper must re-set PATH (e.g., `android-tools/bin`) since exec-ing check.sh bypasses the wrapProgram environment setup.
 
+## T007 — Wire android into flake.nix
+- T005 already wired mcp-android into flake.nix (packages, overlays, default symlinkJoin, smoke test nativeBuildInputs). Wiring tasks may be redundant when the package-creation task needs flake integration to verify its own done-when criteria.
+
