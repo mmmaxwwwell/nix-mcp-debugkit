@@ -1,0 +1,42 @@
+# Spec-kit / agent artifacts
+test-logs/
+logs/
+validate/
+ci-debug/
+BLOCKED.md
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Direnv
+.direnv/
+
+# Editor / OS
+.DS_Store
+*.swp
+*~
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+
+# Nix
+result
+
+# Security
+*.pem
+*.key
+credentials.json
+
+# Coverage
+coverage/
+.nyc_output/
+htmlcov/
