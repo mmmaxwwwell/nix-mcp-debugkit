@@ -6,7 +6,7 @@
 
 ## Phase 1: Flake Scaffold + Test Infrastructure
 
-- [ ] T001 [P] Create flake.nix skeleton with all outputs [FR-001 through FR-009]
+- [x] T001 [P] Create flake.nix skeleton with all outputs [FR-001 through FR-009]
   Create `flake.nix` with inputs (nixpkgs-unstable, flake-utils), eachDefaultSystem iteration, placeholder packages, devShells.default (statix, deadnix, shellcheck, gitleaks, trivy, semgrep, jq, python3, nodejs, android-tools), overlays.default, and packages.${system}.default (symlinkJoin). Add `.envrc` with `use flake`. Verify `nix develop` enters shell with all tools.
   Done when: `nix develop` enters shell; `statix --version`, `shellcheck --version`, `jq --version`, `adb --version` all succeed inside shell; `nix flake show` lists all expected output categories
 
