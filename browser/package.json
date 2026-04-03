@@ -1,0 +1,8 @@
+{
+  "name": "mcp-browser",
+  "version": "0.0.56",
+  "private": true,
+  "dependencies": {
+    "@playwright/mcp": "0.0.56"
+  }
+}

@@ -4,18 +4,6 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 
 ---
 
-## T001 — flake.nix skeleton
-- Nix store permissions may not be available in sandboxed CI/agent environments — `nix flake show` and `nix-instantiate --parse` both need store access. Syntax validation may need to happen at phase validation time.
-- `eachDefaultSystem` output is merged with `//` for non-per-system attrs like `overlays.default`.
-
-## T002 — tests/common.sh
-- `shellcheck` is not on PATH by default; it's available at a nix store path. The `nix develop` shell (from T001) will provide it. For direct invocation outside devshell, use the store path.
-- Bash arithmetic `(( var++ ))` returns exit code 1 when the variable was 0 before increment; wrap in `|| true` to avoid `set -e` traps.
-
-## T003 — tests/smoke.sh
-- Nix `checks` derivations using `runCommand` need `nativeBuildInputs` for all required tools — packages are not on PATH by default in the build sandbox.
-- `${./tests}` in Nix copies the local `tests/` directory into the Nix store, making it available in the sandbox build environment.
-
 ## T005 — android/default.nix
 - `fastmcp` and `mcp` are in nixpkgs-unstable (as of early 2026). `uiautomator2` and `adbutils` are NOT — must be built inline.
 - `uiautomator2` uses `poetry-dynamic-versioning` as build backend; patch pyproject.toml to use plain `poetry-core` since version is already set in the sdist.
@@ -33,3 +21,7 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 - `pyproject = false` in recent nixpkgs-unstable may not correctly select setuptools build hooks; use `format = "setuptools"` explicitly for pbr/setuptools packages.
 - Scripts created in `postFixup` (after Nix's automatic shebang patching and after `wrapProgram`) must use Nix store bash paths (`${pkgs.bash}/bin/bash`) instead of `#!/usr/bin/env bash` — the Nix build sandbox lacks `/usr/bin/env`. `patchShebangs` in postFixup does NOT work on these files.
 
+## T008 — browser/default.nix
+- `@playwright/mcp` 0.0.56 is the latest stable version aligned with nixpkgs playwright-driver 1.58.2 (uses playwright 1.58.0-alpha-2026-01-16). Version 0.0.57+ moved to playwright 1.59.x.
+- `buildNpmPackage` with a local `package.json`/`package-lock.json` wrapper is the cleanest way to package an npm CLI tool. Set `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"` to prevent playwright from trying to download browsers during `npm install`.
+- Chromium binary lives at `${playwright-driver.browsers}/chromium-<rev>/chrome-linux64/chrome`. The `makeWrapper --set PLAYWRIGHT_BROWSERS_PATH` approach makes it automatically discoverable by playwright.

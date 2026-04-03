@@ -13,12 +13,7 @@
 
         # Real packages
         mcp-android = import ./android { inherit pkgs; };
-
-        # Placeholder packages — will be replaced in later phases
-
-        mcp-browser = pkgs.writeShellScriptBin "mcp-browser" ''
-          echo "mcp-browser placeholder"
-        '';
+        mcp-browser = import ./browser { inherit pkgs; };
 
         mcp-ios = pkgs.writeShellScriptBin "mcp-ios" ''
           echo "mcp-ios placeholder"

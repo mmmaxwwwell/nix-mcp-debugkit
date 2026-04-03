@@ -44,7 +44,7 @@
 
 ## Phase 3: Browser Package [P]
 
-- [ ] T008 Create browser/default.nix — mcp-browser package [FR-030 through FR-035] [produces: IC-006]
+- [x] T008 Create browser/default.nix — mcp-browser package [FR-030 through FR-035] [produces: IC-006]
   Use `buildNpmPackage` to package `@playwright/mcp` at exact version aligned with nixpkgs `playwright-driver`. Check nixpkgs' playwright-driver version first: `nix eval nixpkgs#playwright-driver.version`. Pin @playwright/mcp to matching version. Use `makeWrapper` to set `PLAYWRIGHT_BROWSERS_PATH` to `${pkgs.playwright-driver.browsers}`. Entry point: upstream node CLI. All CLI args pass through.
   Done when: `nix build .#mcp-browser` succeeds; `result/bin/mcp-browser` exists; wrapper sets PLAYWRIGHT_BROWSERS_PATH; Chromium binary is reachable at the configured path
 
