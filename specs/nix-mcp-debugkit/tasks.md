@@ -64,7 +64,7 @@
   Use `buildNpmPackage` for `ios-simulator-mcp` at exact pinned version (≥1.5.2). Set `meta.platforms = lib.platforms.darwin`. Use `makeWrapper` for PATH. Entry point: upstream node CLI. All CLI args pass through.
   Done when: `nix build .#mcp-ios` succeeds on macOS (or `nix eval` confirms derivation is valid); `nix eval .#packages.x86_64-linux.mcp-ios` fails with platform error on Linux
 
-- [ ] T012 Create ios/check.sh — pre-flight diagnostics [FR-025] [produces: IC-003]
+- [x] T012 Create ios/check.sh — pre-flight diagnostics [FR-025] [produces: IC-003]
   Shell script: (1) verify `xcrun simctl list` succeeds → ✓/✗ "Xcode CLI tools not found → install with xcode-select --install", (2) check for at least one simulator → ✓ with list / ✗ "No simulators found → create with xcrun simctl create". Exit code per IC-003.
   Done when: check.sh script exists; `shellcheck ios/check.sh` passes; output matches IC-003 format
 
