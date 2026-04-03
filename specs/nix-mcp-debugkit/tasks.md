@@ -14,7 +14,7 @@
   Implement: `start_test_run <target>`, `test_pass <name>`, `test_fail <name> <details>`, `test_skip <name> <reason>`, `finish_test_run` (writes summary.json), `mcp_start <binary>`, `mcp_stop`, `mcp_call <method> <params_json>` (sends JSON-RPC over stdin, reads response), `assert_json <json> <jq_expr> <expected>`, `assert_eq <actual> <expected> <msg>`, `assert_contains <haystack> <needle> <msg>`, `wait_for <name> <cmd> <timeout>`. All functions write structured output to `test-logs/<target>/`. Non-vacuous check: `finish_test_run` exits 1 if pass + fail == 0.
   Done when: `shellcheck tests/common.sh` passes; sourcing common.sh and running a mock test produces valid `test-logs/test/summary.json` with correct pass/fail/skip counts; `mcp_call` sends valid JSON-RPC and reads response
 
-- [ ] T003 Create tests/smoke.sh framework [SC-001 through SC-005, SC-014, SC-020] [consumes: IC-002]
+- [x] T003 Create tests/smoke.sh framework [SC-001 through SC-005, SC-014, SC-020] [consumes: IC-002]
   Smoke test script that sources common.sh. Tests: each package binary exists and is executable, `--check` flag is accepted (exits without crash), `--help` or MCP initialize handshake works, default package contains correct packages per platform, test app packages build. Wire into `checks.${system}.smoke` in flake.nix (as a Nix check derivation that runs smoke.sh).
   Done when: `nix flake check` runs smoke tests (they'll fail until packages exist — that's expected); `shellcheck tests/smoke.sh` passes; smoke.sh sources common.sh and writes structured output
 

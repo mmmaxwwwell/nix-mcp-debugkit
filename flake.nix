@@ -64,7 +64,27 @@
         };
 
         checks = {
-          # Placeholder for smoke tests — will be wired in T003
+          smoke = pkgs.runCommand "smoke-tests" {
+            nativeBuildInputs = [
+              pkgs.bash
+              pkgs.jq
+              pkgs.shellcheck
+              mcp-android
+              mcp-browser
+              mcp-ios
+              test-app-android
+            ];
+          } ''
+            export HOME="$TMPDIR"
+            export DEFAULT_PKG_PATH="${pkgs.symlinkJoin {
+              name = "nix-mcp-debugkit";
+              paths = defaultPackages;
+            }}"
+            export TEST_APP_PATHS="${test-app-android}/bin/test-app-android:${test-app-web}"
+            cd ${./tests}
+            bash smoke.sh
+            cp -r test-logs "$out"
+          '';
         };
       }
     ) // {

@@ -12,3 +12,7 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 - `shellcheck` is not on PATH by default; it's available at a nix store path. The `nix develop` shell (from T001) will provide it. For direct invocation outside devshell, use the store path.
 - Bash arithmetic `(( var++ ))` returns exit code 1 when the variable was 0 before increment; wrap in `|| true` to avoid `set -e` traps.
 
+## T003 — tests/smoke.sh
+- Nix `checks` derivations using `runCommand` need `nativeBuildInputs` for all required tools — packages are not on PATH by default in the build sandbox.
+- `${./tests}` in Nix copies the local `tests/` directory into the Nix store, making it available in the sandbox build environment.
+
