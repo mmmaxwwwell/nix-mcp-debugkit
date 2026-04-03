@@ -18,7 +18,7 @@
   Smoke test script that sources common.sh. Tests: each package binary exists and is executable, `--check` flag is accepted (exits without crash), `--help` or MCP initialize handshake works, default package contains correct packages per platform, test app packages build. Wire into `checks.${system}.smoke` in flake.nix (as a Nix check derivation that runs smoke.sh).
   Done when: `nix flake check` runs smoke tests (they'll fail until packages exist — that's expected); `shellcheck tests/smoke.sh` passes; smoke.sh sources common.sh and writes structured output
 
-- [ ] T004 Create LICENSE file (MIT)
+- [x] T004 Create LICENSE file (MIT)
   Standard MIT license with copyright holder `mmmaxwwwell`.
   Done when: LICENSE file exists with MIT text
 
