@@ -16,3 +16,8 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 - Nix `checks` derivations using `runCommand` need `nativeBuildInputs` for all required tools — packages are not on PATH by default in the build sandbox.
 - `${./tests}` in Nix copies the local `tests/` directory into the Nix store, making it available in the sandbox build environment.
 
+## T005 — android/default.nix
+- `fastmcp` and `mcp` are in nixpkgs-unstable (as of early 2026). `uiautomator2` and `adbutils` are NOT — must be built inline.
+- `uiautomator2` uses `poetry-dynamic-versioning` as build backend; patch pyproject.toml to use plain `poetry-core` since version is already set in the sdist.
+- `adbutils` uses `pbr` for builds; set `PBR_VERSION = version;` to avoid git-based version detection in the Nix sandbox.
+

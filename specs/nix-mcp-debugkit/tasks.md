@@ -26,7 +26,7 @@
 
 ## Phase 2: Android Package [P]
 
-- [ ] T005 Create android/default.nix — mcp-android package [FR-010 through FR-014] [produces: IC-006]
+- [x] T005 Create android/default.nix — mcp-android package [FR-010 through FR-014] [produces: IC-006]
   Use `buildPythonApplication` to package `android-mcp` from PyPI at exact pinned version. Determine current version from PyPI. Use `makeWrapper` to prepend `android-tools/bin` (adb) to PATH. Entry point: the upstream `android-mcp` console script. All CLI args pass through. Add `meta.description` and `meta.license`.
   Done when: `nix build .#mcp-android` succeeds; `result/bin/mcp-android` exists; `ldd` or `file` confirms it's a wrapper script; `strings result/bin/mcp-android | grep adb` confirms adb path wiring
 

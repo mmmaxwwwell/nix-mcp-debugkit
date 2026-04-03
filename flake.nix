@@ -11,10 +11,10 @@
       let
         pkgs = import nixpkgs { inherit system; };
 
+        # Real packages
+        mcp-android = import ./android { inherit pkgs; };
+
         # Placeholder packages — will be replaced in later phases
-        mcp-android = pkgs.writeShellScriptBin "mcp-android" ''
-          echo "mcp-android placeholder"
-        '';
 
         mcp-browser = pkgs.writeShellScriptBin "mcp-browser" ''
           echo "mcp-browser placeholder"
