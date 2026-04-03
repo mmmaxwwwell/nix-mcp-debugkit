@@ -33,3 +33,6 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 ## T016 — Wire android E2E into flake.nix checks
 - Use `requiredSystemFeatures = [ "kvm" ]` on the check derivation so Nix only runs it on builders with KVM support. Combined with `lib.optionalAttrs (!isDarwin)` to restrict to Linux.
 - The emulator SDK needs a separate `composeAndroidPackages` call with `includeEmulator = true`, `includeSystemImages = true`, `systemImageTypes = [ "default" ]`, and `abiVersions = [ "x86_64" ]` — the test-app-android composition omits these to keep build times minimal.
+
+## phase5-android-test-app-e2e-fix1 — Unfree license fix
+- `config.android_sdk.accept_license = true` is NOT sufficient for Nix flake/pure evaluation — it only controls the Android SDK's internal license check. You also need `config.allowUnfree = true` (or a targeted `allowUnfreePredicate`) in the nixpkgs import config to prevent Nix from refusing to evaluate the `androidsdk` derivation.

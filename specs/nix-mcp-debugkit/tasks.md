@@ -90,6 +90,8 @@
   Add `checks.${system}.android-e2e` that runs android-e2e.sh. Only enable on Linux (requires KVM). The check derivation must have access to android-tools, the emulator, and the test APK.
   Done when: `nix flake check` includes android-e2e on Linux; check passes on KVM-enabled system
 
+- [x] phase5-android-test-app-e2e-fix1 Fix phase validation failure: read specs/nix-mcp-debugkit/validate/phase5-android-test-app-e2e/ for failure history
+
 ---
 
 ## Phase 6: Browser Test App + E2E
