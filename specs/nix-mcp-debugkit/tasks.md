@@ -48,7 +48,7 @@
   Use `buildNpmPackage` to package `@playwright/mcp` at exact version aligned with nixpkgs `playwright-driver`. Check nixpkgs' playwright-driver version first: `nix eval nixpkgs#playwright-driver.version`. Pin @playwright/mcp to matching version. Use `makeWrapper` to set `PLAYWRIGHT_BROWSERS_PATH` to `${pkgs.playwright-driver.browsers}`. Entry point: upstream node CLI. All CLI args pass through.
   Done when: `nix build .#mcp-browser` succeeds; `result/bin/mcp-browser` exists; wrapper sets PLAYWRIGHT_BROWSERS_PATH; Chromium binary is reachable at the configured path
 
-- [ ] T009 Create browser/check.sh — pre-flight diagnostics [FR-036] [produces: IC-003]
+- [x] T009 Create browser/check.sh — pre-flight diagnostics [FR-036] [produces: IC-003]
   Shell script: (1) verify PLAYWRIGHT_BROWSERS_PATH is set and directory exists → ✓/✗, (2) find Chromium binary and attempt headless launch (`chromium --headless --disable-gpu --dump-dom about:blank`) → ✓ with version / ✗ with error details. Exit code per IC-003.
   Done when: `mcp-browser --check` reports Chromium version; output matches IC-003 format; `shellcheck browser/check.sh` passes
 

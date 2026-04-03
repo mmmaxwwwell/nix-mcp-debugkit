@@ -21,6 +21,21 @@ pkgs.buildNpmPackage rec {
     makeWrapper ${pkgs.nodejs}/bin/node $out/bin/mcp-browser \
       --add-flags "$out/lib/node_modules/mcp-browser/node_modules/@playwright/mcp/cli.js" \
       --set PLAYWRIGHT_BROWSERS_PATH "${pkgs.playwright-driver.browsers}"
+
+    # Install check script
+    install -Dm755 ${./check.sh} $out/libexec/mcp-browser-check.sh
+
+    # Rename the makeWrapper output and create outer wrapper that intercepts --check
+    mv $out/bin/mcp-browser $out/bin/.mcp-browser-launch
+    cat > $out/bin/mcp-browser <<'WRAPPER'
+#!${pkgs.bash}/bin/bash
+export PLAYWRIGHT_BROWSERS_PATH="${pkgs.playwright-driver.browsers}"
+if [ "''${1:-}" = "--check" ]; then
+  exec ${pkgs.bash}/bin/bash "$(dirname "$0")/../libexec/mcp-browser-check.sh"
+fi
+exec "$(dirname "$0")/.mcp-browser-launch" "$@"
+WRAPPER
+    chmod +x $out/bin/mcp-browser
   '';
 
   meta = with pkgs.lib; {
