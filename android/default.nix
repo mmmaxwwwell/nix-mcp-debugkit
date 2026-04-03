@@ -1,17 +1,17 @@
 { pkgs }:
 
 let
-  python3Packages = pkgs.python3Packages;
+  inherit (pkgs) python3Packages;
 
   # adbutils — not in nixpkgs; pure-Python ADB client library
   adbutils = python3Packages.buildPythonPackage rec {
     pname = "adbutils";
     version = "2.12.0";
-    pyproject = false;
+    format = "setuptools";
 
     src = pkgs.fetchPypi {
       inherit pname version;
-      hash = "sha256-NlOo+TlzYiDEtfm9lh72YzH5kFpo/ws8lk8c6Z0OaGg=";
+      hash = "sha256-NlOo85c1YgvEWxXuLnoA5QLJ8aJZRS4fsru6PqWdDmg=";
     };
 
     # Ensure pbr uses the correct version without git
@@ -43,7 +43,7 @@ let
 
     src = pkgs.fetchPypi {
       inherit pname version;
-      hash = "sha256-9vXkAjgsOnN9jtjyhJRs0B1MH0mj4AT4i7v/wIShpfY=";
+      hash = "sha256-9vXkAjgsOmYtvaCs6JxpHI0/mqNAQS+Lv89fCCSaIaY=";
     };
 
     # Upstream uses poetry-dynamic-versioning, but version is already set in
@@ -80,9 +80,9 @@ python3Packages.buildPythonApplication rec {
   version = "0.1.0";
   pyproject = true;
 
-  src = pkgs.fetchPypi {
-    inherit pname version;
-    hash = "sha256-pMBC+ZFPU0qNqeAAZisyuD2HRFxoFueXHSbx46e4bk4=";
+  src = pkgs.fetchurl {
+    url = "https://files.pythonhosted.org/packages/00/7c/b4b26166bccc0e57712cdd02988431054a3cd7f1464a7562935c54022b74/android_mcp-0.1.0.tar.gz";
+    hash = "sha256-pMBC+VH62smwmmjYdSROL0wayZ0uT8JND5jKkdXADfg=";
   };
 
   nativeBuildInputs = with python3Packages; [
@@ -109,14 +109,17 @@ python3Packages.buildPythonApplication rec {
     # android-mcp (env wrapper). Rename the env wrapper and add our shim.
     mv $out/bin/android-mcp $out/bin/.android-mcp-launch
     cat > $out/bin/android-mcp <<'WRAPPER'
-#!/usr/bin/env bash
+#!${pkgs.bash}/bin/bash
 export PATH="${pkgs.android-tools}/bin:''${PATH:-}"
 if [ "''${1:-}" = "--check" ]; then
-  exec "$(dirname "$0")/../libexec/android-mcp-check.sh"
+  exec ${pkgs.bash}/bin/bash "$(dirname "$0")/../libexec/android-mcp-check.sh"
 fi
 exec "$(dirname "$0")/.android-mcp-launch" "$@"
 WRAPPER
     chmod +x $out/bin/android-mcp
+
+    # Expose as mcp-android (expected by smoke tests and users)
+    ln -s android-mcp $out/bin/mcp-android
   '';
 
   # Tests require a connected Android device

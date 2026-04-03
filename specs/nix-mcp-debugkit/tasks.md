@@ -38,6 +38,8 @@
   Add `packages.${system}.mcp-android` to flake outputs for Linux + darwin. Add to overlays.default. Add to default package symlinkJoin. Update smoke tests to verify android package.
   Done when: `nix flake show` lists mcp-android; `nix build .#mcp-android` succeeds; smoke test for android passes
 
+- [x] phase2-android-package-p-fix1 Fix phase validation failure: read specs/nix-mcp-debugkit/validate/phase2-android-package-p/ for failure history
+
 ---
 
 ## Phase 3: Browser Package [P]

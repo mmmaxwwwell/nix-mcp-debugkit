@@ -89,10 +89,9 @@
         };
       }
     ) // {
-      overlays.default = final: prev: {
-        mcp-android = self.packages.${prev.stdenv.hostPlatform.system}.mcp-android;
-        mcp-browser = self.packages.${prev.stdenv.hostPlatform.system}.mcp-browser;
-        mcp-ios = self.packages.${prev.stdenv.hostPlatform.system}.mcp-ios;
-      };
+      overlays.default = _final: prev:
+        let sys = prev.stdenv.hostPlatform.system; in {
+          inherit (self.packages.${sys}) mcp-android mcp-browser mcp-ios;
+        };
     };
 }
