@@ -25,3 +25,7 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 - Building an Android APK in Nix without Gradle: use `composeAndroidPackages` for SDK, then drive `aapt2 compile` → `aapt2 link` → `javac` → `d8` → `zip` → `zipalign` → `apksigner` manually in `buildPhase`. The `buildApp` function in androidenv is Ant-based and outdated.
 - `composeAndroidPackages` requires `config.android_sdk.accept_license = true` in the nixpkgs import config (or env `NIXPKGS_ACCEPT_ANDROID_SDK_LICENSE=1`). Without this, the SDK derivation fails evaluation.
 - The old `test-app-android` placeholder was a `writeShellScriptBin` with a `/bin/` output; the real APK derivation outputs to `$out/test-app-android.apk` — smoke test `TEST_APP_PATHS` only checks substring match, so path format change is safe.
+
+## T015 — tests/android-e2e.sh
+- android-mcp (PyPI) uses FastMCP and uiautomator2. The MCP tool names may vary; the E2E script tries multiple tool name variants (click/tap, dump_hierarchy/get_screen_info, type/set_text) with fallbacks.
+- AVD creation can be done via manual INI files when `avdmanager` is not on PATH (common in Nix where only the emulator + system image are provided). The key fields are `image.sysdir.1` pointing at the system image and `hw.cpu.arch=x86_64`.
