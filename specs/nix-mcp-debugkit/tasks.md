@@ -10,7 +10,7 @@
   Create `flake.nix` with inputs (nixpkgs-unstable, flake-utils), eachDefaultSystem iteration, placeholder packages, devShells.default (statix, deadnix, shellcheck, gitleaks, trivy, semgrep, jq, python3, nodejs, android-tools), overlays.default, and packages.${system}.default (symlinkJoin). Add `.envrc` with `use flake`. Verify `nix develop` enters shell with all tools.
   Done when: `nix develop` enters shell; `statix --version`, `shellcheck --version`, `jq --version`, `adb --version` all succeed inside shell; `nix flake show` lists all expected output categories
 
-- [ ] T002 [P] Create tests/common.sh with shared test utilities [FR-046, FR-047] [produces: IC-002]
+- [x] T002 [P] Create tests/common.sh with shared test utilities [FR-046, FR-047] [produces: IC-002]
   Implement: `start_test_run <target>`, `test_pass <name>`, `test_fail <name> <details>`, `test_skip <name> <reason>`, `finish_test_run` (writes summary.json), `mcp_start <binary>`, `mcp_stop`, `mcp_call <method> <params_json>` (sends JSON-RPC over stdin, reads response), `assert_json <json> <jq_expr> <expected>`, `assert_eq <actual> <expected> <msg>`, `assert_contains <haystack> <needle> <msg>`, `wait_for <name> <cmd> <timeout>`. All functions write structured output to `test-logs/<target>/`. Non-vacuous check: `finish_test_run` exits 1 if pass + fail == 0.
   Done when: `shellcheck tests/common.sh` passes; sourcing common.sh and running a mock test produces valid `test-logs/test/summary.json` with correct pass/fail/skip counts; `mcp_call` sends valid JSON-RPC and reads response
 
