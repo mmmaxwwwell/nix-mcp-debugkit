@@ -15,9 +15,7 @@
         mcp-android = import ./android { inherit pkgs; };
         mcp-browser = import ./browser { inherit pkgs; };
 
-        mcp-ios = pkgs.writeShellScriptBin "mcp-ios" ''
-          echo "mcp-ios placeholder"
-        '';
+        mcp-ios = import ./ios { inherit pkgs; };
 
         test-app-android = pkgs.writeShellScriptBin "test-app-android" ''
           echo "test-app-android placeholder"

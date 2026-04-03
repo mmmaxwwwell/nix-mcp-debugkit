@@ -60,7 +60,7 @@
 
 ## Phase 4: iOS Package [P]
 
-- [ ] T011 Create ios/default.nix — mcp-ios package [FR-020 through FR-024] [produces: IC-006]
+- [x] T011 Create ios/default.nix — mcp-ios package [FR-020 through FR-024] [produces: IC-006]
   Use `buildNpmPackage` for `ios-simulator-mcp` at exact pinned version (≥1.5.2). Set `meta.platforms = lib.platforms.darwin`. Use `makeWrapper` for PATH. Entry point: upstream node CLI. All CLI args pass through.
   Done when: `nix build .#mcp-ios` succeeds on macOS (or `nix eval` confirms derivation is valid); `nix eval .#packages.x86_64-linux.mcp-ios` fails with platform error on Linux
 

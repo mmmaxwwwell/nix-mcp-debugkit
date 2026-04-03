@@ -1,0 +1,8 @@
+{
+  "name": "mcp-ios",
+  "version": "1.5.2",
+  "private": true,
+  "dependencies": {
+    "ios-simulator-mcp": "1.5.2"
+  }
+}
