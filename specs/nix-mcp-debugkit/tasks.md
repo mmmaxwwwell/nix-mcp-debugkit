@@ -78,7 +78,7 @@
 
 ## Phase 5: Android Test App + E2E
 
-- [ ] T014 Create test-apps/android/ — minimal Java counter app [FR-040, FR-048] [produces: IC-004]
+- [x] T014 Create test-apps/android/ — minimal Java counter app [FR-040, FR-048] [produces: IC-004]
   Create minimal Android app with: AndroidManifest.xml (package: com.nixmcpdebugkit.testapp, minSdk 28, targetSdk 34), single MainActivity.java with: Button (id: btn_tap, text: "Tap Me"), TextView (id: txt_counter, text: "Count: 0"), EditText (id: input_text, hint: "Type here"), ListView (id: list_items, 50 items "Item 1" through "Item 50"). Button click increments counter. Build with nixpkgs androidenv (androidenv.composeAndroidPackages for SDK, standard Java build). Package as `packages.${system}.test-app-android`.
   Done when: `nix build .#test-app-android` produces APK; APK installs on an emulator; app launches showing button, counter "Count: 0", text input, scrollable list
 

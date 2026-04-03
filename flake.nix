@@ -9,7 +9,10 @@
   outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs { inherit system; };
+        pkgs = import nixpkgs {
+          inherit system;
+          config.android_sdk.accept_license = true;
+        };
 
         inherit (pkgs.stdenv) isDarwin;
 
@@ -19,9 +22,7 @@
 
         mcp-ios = import ./ios { inherit pkgs; };
 
-        test-app-android = pkgs.writeShellScriptBin "test-app-android" ''
-          echo "test-app-android placeholder"
-        '';
+        test-app-android = import ./test-apps/android { inherit pkgs; };
 
         test-app-web = pkgs.runCommand "test-app-web" { } ''
           mkdir -p $out
@@ -78,7 +79,7 @@
               name = "nix-mcp-debugkit";
               paths = defaultPackages;
             }}"
-            export TEST_APP_PATHS="${test-app-android}/bin/test-app-android:${test-app-web}"
+            export TEST_APP_PATHS="${test-app-android}:${test-app-web}"
             cp -r ${./tests}/* "$TMPDIR/"
             cd "$TMPDIR"
             bash smoke.sh
