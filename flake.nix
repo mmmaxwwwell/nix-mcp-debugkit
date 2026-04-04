@@ -70,6 +70,11 @@
             nodejs
             android-tools
           ];
+          shellHook = ''
+            if [ -d .git ]; then
+              git config core.hooksPath .githooks
+            fi
+          '';
         };
 
         checks = {

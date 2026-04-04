@@ -140,7 +140,7 @@
   All test jobs upload `test-logs/` as artifacts on failure. All test jobs assert summary.json has pass > 0.
   Done when: ci.yml passes YAML lint; all job definitions reference correct scripts and artifacts; non-vacuous verification steps present in every test job
 
-- [ ] T024 Add Gitleaks pre-commit hook [FR-060]
+- [x] T024 Add Gitleaks pre-commit hook [FR-060]
   Add `.pre-commit-config.yaml` with gitleaks hook OR a git hooks script at `.githooks/pre-commit`. Include `pre-commit` in devShell. Document setup in README.
   Done when: committing a file with a fake secret (e.g., `AWS_SECRET_ACCESS_KEY=AKIA...`) is rejected; hook runs automatically after `nix develop`
 

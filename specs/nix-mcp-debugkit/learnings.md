@@ -27,3 +27,7 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 ## T023 — .github/workflows/ci.yml
 - GitHub Actions KVM access on ubuntu-latest requires a udev rule (`KERNEL=="kvm"` with MODE 0666) + udevadm reload/trigger — just `sudo chmod` on `/dev/kvm` is not persistent across steps.
 - `browser-e2e-all.sh` produces `test-logs/browser-{firefox,webkit}/summary.json` (hyphenated prefix), while `browser-e2e.sh` produces `test-logs/browser/summary.json` — verify paths match when writing non-vacuous checks.
+
+## T024 — Gitleaks pre-commit hook
+- Used `.githooks/pre-commit` + `git config core.hooksPath .githooks` (via shellHook) instead of the Python `pre-commit` framework — simpler, no extra dependency.
+- `AKIAIOSFODNN7EXAMPLE` is in gitleaks' built-in allowlist (AWS documentation example key). Use a non-example key like `wJalrXUtnFEMI/K7MDENG/bPxRfiCYSECRETKEY1` when testing detection.
