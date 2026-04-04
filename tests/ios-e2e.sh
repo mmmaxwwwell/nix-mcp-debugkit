@@ -132,13 +132,13 @@ echo "=== Test: screenshot ==="
 screenshot_resp=""
 for tool_name in "screenshot" "take_screenshot" "ios_screenshot"; do
   if printf "%s" "$tools_text" | grep -qw "$tool_name"; then
-    screenshot_resp=$(mcp_call "tools/call" "{\"name\":\"$tool_name\",\"arguments\":{}}")
+    screenshot_resp=$(mcp_call "tools/call" "{\"name\":\"$tool_name\",\"arguments\":{\"output_path\":\"$_TEST_LOG_DIR/screenshot.png\"}}")
     break
   fi
 done
 # Fallback: try "screenshot" directly
 if [[ -z "$screenshot_resp" ]]; then
-  screenshot_resp=$(mcp_call "tools/call" '{"name":"screenshot","arguments":{}}')
+  screenshot_resp=$(mcp_call "tools/call" "{\"name\":\"screenshot\",\"arguments\":{\"output_path\":\"$_TEST_LOG_DIR/screenshot.png\"}}")
 fi
 
 if printf "%s" "$screenshot_resp" | jq -e '.result' >/dev/null 2>&1; then
@@ -165,7 +165,7 @@ fi
 # 5b: Tap center of screen — verify response
 echo "=== Test: tap center of screen ==="
 tap_resp=""
-for tool_name in "tap" "click" "ios_tap"; do
+for tool_name in "ui_tap" "tap" "click" "ios_tap"; do
   if printf "%s" "$tools_text" | grep -qw "$tool_name"; then
     # Tap center of a standard iPhone screen (roughly 195, 422 for logical coords)
     tap_resp=$(mcp_call "tools/call" "{\"name\":\"$tool_name\",\"arguments\":{\"x\":195,\"y\":422}}")

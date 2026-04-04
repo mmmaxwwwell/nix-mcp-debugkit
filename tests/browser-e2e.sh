@@ -90,6 +90,9 @@ if [[ -n "$PLAYWRIGHT_BROWSERS_PATH" ]] && [[ ! -w "$PLAYWRIGHT_BROWSERS_PATH" ]
   fi
   export PLAYWRIGHT_BROWSERS_PATH="$_writable_browsers"
 fi
+# Ensure Chromium runs without sandbox in CI (GitHub Actions runs as root)
+export PLAYWRIGHT_CHROMIUM_SANDBOX=0
+export PLAYWRIGHT_LAUNCH_OPTIONS='{"args":["--no-sandbox","--disable-setuid-sandbox"]}'
 mcp_start "$mcp_browser_bin" --browser "$BROWSER"
 sleep 2
 
