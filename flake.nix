@@ -27,24 +27,14 @@
 
         test-app-web = import ./test-apps/web { inherit pkgs; };
 
-        # Android emulator SDK (for E2E tests — Linux only)
-        androidEmulatorComposition = pkgs.androidenv.composeAndroidPackages {
-          platformVersions = [ "34" ];
-          buildToolsVersions = [ "34.0.0" ];
-          includeEmulator = true;
-          includeSystemImages = true;
-          systemImageTypes = [ "default" ];
-          abiVersions = [ "x86_64" ];
-          includeNDK = false;
-          includeSources = false;
-        };
-        androidEmulatorSdk = androidEmulatorComposition.androidsdk;
-
         # Default package: symlinkJoin of all platform-appropriate packages
-        defaultPackages =
-          if isDarwin
-          then [ mcp-browser mcp-ios ]
-          else [ mcp-android mcp-browser ];
+        defaultPackages = if isDarwin then [
+          mcp-browser
+          mcp-ios
+        ] else [
+          mcp-android
+          mcp-browser
+        ];
 
       in {
         packages = {
@@ -53,9 +43,7 @@
             name = "nix-mcp-debugkit";
             paths = defaultPackages;
           };
-        } // pkgs.lib.optionalAttrs isDarwin {
-          inherit mcp-ios;
-        };
+        } // pkgs.lib.optionalAttrs isDarwin { inherit mcp-ios; };
 
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
@@ -87,82 +75,32 @@
               mcp-android
               mcp-browser
               test-app-android
-            ] ++ pkgs.lib.optionals isDarwin [
-              mcp-ios
-            ];
+            ] ++ pkgs.lib.optionals isDarwin [ mcp-ios ];
           } ''
             export HOME="$TMPDIR"
-            export DEFAULT_PKG_PATH="${pkgs.symlinkJoin {
-              name = "nix-mcp-debugkit";
-              paths = defaultPackages;
-            }}"
+            export DEFAULT_PKG_PATH="${
+              pkgs.symlinkJoin {
+                name = "nix-mcp-debugkit";
+                paths = defaultPackages;
+              }
+            }"
             export TEST_APP_PATHS="${test-app-android}:${test-app-web}"
             cp -r ${./tests}/* "$TMPDIR/"
             cd "$TMPDIR"
             bash smoke.sh
             cp -r test-logs "$out"
           '';
-        } // pkgs.lib.optionalAttrs isDarwin {
-          ios-e2e = pkgs.runCommand "ios-e2e" {
-            nativeBuildInputs = [
-              pkgs.bash
-              pkgs.jq
-              mcp-ios
-            ];
-          } ''
-            export HOME="$TMPDIR"
-            cp -r ${./tests}/* "$TMPDIR/"
-            cd "$TMPDIR"
-            bash ios-e2e.sh
-            cp -r test-logs "$out"
-          '';
-        } // pkgs.lib.optionalAttrs (!isDarwin) {
-          android-e2e = pkgs.runCommand "android-e2e" {
-            nativeBuildInputs = [
-              pkgs.bash
-              pkgs.jq
-              pkgs.android-tools
-              androidEmulatorSdk
-              mcp-android
-              test-app-android
-            ];
-            requiredSystemFeatures = [ "kvm" ];
-          } ''
-            export HOME="$TMPDIR"
-            export TEST_APK_PATH="${test-app-android}/test-app-android.apk"
-            export ANDROID_SDK_ROOT="${androidEmulatorSdk}/libexec/android-sdk"
-            export EMULATOR_BIN="${androidEmulatorSdk}/libexec/android-sdk/emulator/emulator"
-            cp -r ${./tests}/* "$TMPDIR/"
-            cd "$TMPDIR"
-            bash android-e2e.sh
-            cp -r test-logs "$out"
-          '';
-
-          browser-e2e = pkgs.runCommand "browser-e2e" {
-            nativeBuildInputs = [
-              pkgs.bash
-              pkgs.jq
-              pkgs.curl
-              pkgs.python3
-              mcp-browser
-              test-app-web
-            ];
-          } ''
-            export HOME="$TMPDIR"
-            export TEST_WEB_DIR="${test-app-web}"
-            cp -r ${./tests}/* "$TMPDIR/"
-            cd "$TMPDIR"
-            bash browser-e2e.sh
-            cp -r test-logs "$out"
-          '';
+          # NOTE: e2e checks (android-e2e, browser-e2e, ios-e2e) run only in CI
+          # workflows — they need KVM, real browsers, or macOS simulators which
+          # aren't available inside the Nix build sandbox.
         };
-      }
-    ) // {
-      overlays.default = _final: prev:
-        let sys = prev.stdenv.hostPlatform.system; in {
-          inherit (self.packages.${sys}) mcp-android mcp-browser;
-        } // prev.lib.optionalAttrs prev.stdenv.isDarwin {
-          inherit (self.packages.${sys}) mcp-ios;
-        };
-    };
+      }) // {
+        overlays.default = _final: prev:
+          let sys = prev.stdenv.hostPlatform.system;
+          in {
+            inherit (self.packages.${sys}) mcp-android mcp-browser;
+          } // prev.lib.optionalAttrs prev.stdenv.isDarwin {
+            inherit (self.packages.${sys}) mcp-ios;
+          };
+      };
 }

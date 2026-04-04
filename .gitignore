@@ -2,6 +2,7 @@
 test-logs/
 logs/
 validate/
+attempts/
 ci-debug/
 BLOCKED.md
 
