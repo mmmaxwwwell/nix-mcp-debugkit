@@ -123,7 +123,12 @@ mcp_stop() {
 
 mcp_call() {
   local method="${1:?mcp_call requires a method}"
-  local params="${2:-{}}"
+  local params
+  if [[ $# -ge 2 ]]; then
+    params="$2"
+  else
+    params='{}'
+  fi
   (( _JSONRPC_ID++ )) || true
 
   local request
