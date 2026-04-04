@@ -168,7 +168,7 @@
 
 ## Phase 10: README + Documentation
 
-- [ ] T027 Write README.md
+- [x] T027 Write README.md
   Human-facing README with: project overview, badges (CI status, license), quick start (`nix run github:mmmaxwwwell/nix-mcp-debugkit#mcp-browser`), flake input usage (individual, default, overlay), Claude Code MCP config JSON examples (all 3 targets), prerequisites per target (KVM, Xcode), `--check` usage for agents, troubleshooting (common errors, browser version mismatch, KVM missing), CI setup for contributors (SNYK_TOKEN, SONAR_TOKEN), contributing section, license.
   Done when: README renders correctly; all nix run commands are accurate; MCP config JSON is valid; prerequisites listed per target
 
