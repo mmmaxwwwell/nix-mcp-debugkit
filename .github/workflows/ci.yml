@@ -19,7 +19,7 @@ jobs:
       - name: Run deadnix
         run: nix develop --command deadnix .
       - name: Run shellcheck
-        run: nix develop --command shellcheck tests/*.sh
+        run: nix develop --command shellcheck --severity=warning tests/*.sh
 
   build-linux:
     runs-on: ubuntu-latest

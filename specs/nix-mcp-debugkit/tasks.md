@@ -144,6 +144,8 @@
   Add `.pre-commit-config.yaml` with gitleaks hook OR a git hooks script at `.githooks/pre-commit`. Include `pre-commit` in devShell. Document setup in README.
   Done when: committing a file with a fake secret (e.g., `AWS_SECRET_ACCESS_KEY=AKIA...`) is rejected; hook runs automatically after `nix develop`
 
+- [x] phase8-ci-pipeline-fix1 Fix phase validation failure: read specs/nix-mcp-debugkit/validate/phase8-ci-pipeline/ for failure history
+
 ---
 
 ## Phase 9: Security Scanning

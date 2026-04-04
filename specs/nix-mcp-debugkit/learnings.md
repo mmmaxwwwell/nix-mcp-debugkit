@@ -31,3 +31,6 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 ## T024 — Gitleaks pre-commit hook
 - Used `.githooks/pre-commit` + `git config core.hooksPath .githooks` (via shellHook) instead of the Python `pre-commit` framework — simpler, no extra dependency.
 - `AKIAIOSFODNN7EXAMPLE` is in gitleaks' built-in allowlist (AWS documentation example key). Use a non-example key like `wJalrXUtnFEMI/K7MDENG/bPxRfiCYSECRETKEY1` when testing detection.
+
+## phase8-ci-pipeline-fix1 — CI shellcheck severity
+- `shellcheck` exits non-zero on info-level SC1091 (`source "$VAR/file"` not followed). CI must use `--severity=warning` to avoid false failures on runtime-variable source paths.
