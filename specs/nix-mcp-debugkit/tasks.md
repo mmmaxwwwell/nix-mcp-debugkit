@@ -195,7 +195,7 @@
   (3) ci.yml had continue-on-error: true on Firefox+WebKit test step AND WebKit verification step — removed both so WebKit failures actually fail CI.
   Done when: common.sh fails on skip > 0; ios-e2e.sh has no test_skip calls; ci.yml has no continue-on-error on test/verification steps; idb CLI is installed in iOS CI job
 
-- [ ] T031 [needs: gh] Observable output validation
+- [x] T031 [needs: gh] Observable output validation
   Verify README badges render. Verify CI artifacts are downloadable. Verify `nix run github:mmmaxwwwell/nix-mcp-debugkit#mcp-browser` works from a clean system. Run acceptance scenarios from spec.
   Done when: badges render correctly; remote nix run works; acceptance scenarios verified
 

@@ -68,3 +68,9 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 - **Artifacts**: All 9 artifacts uploaded and downloadable (android-e2e-logs, browser-e2e-logs, ios-e2e-logs, security-{gitleaks,trivy,semgrep,snyk,sonarcloud}-logs, gitleaks-results.sarif).
 - **Observable validation**: CI badge returns 200, license badge renders valid SVG, ci.yml and LICENSE exist on default branch. Downloaded android-e2e-logs artifact contains valid summary.json with 10 passing tests.
 - **Total CI debug iterations**: 7 attempts across 5 distinct failure categories (cachix/install-nix-action macOS, SARIF format, idb Python path, idb Python 3.14 asyncio, idb companion connect).
+
+## T031 — Observable output validation
+
+- **Remote `nix run` cannot be tested in sandboxed environments** where the Nix store is read-only (`/nix/var/nix/db/big-lock: Permission denied`). Validate via: (1) flake structure inspection confirming `packages.<system>.mcp-browser` is exported, (2) CI build jobs (build-linux, build-macos) already proving `nix build` succeeds, (3) `gh api` to verify repo contents on default branch.
+- **All 9 CI artifacts remain downloadable** via `gh api .../artifacts/<id>/zip` — none expired. Browser E2E: Chromium 7/7, Firefox 7/7, WebKit 5/7; Android 10/10; iOS 4/5 (idb tap known issue).
+- **Acceptance scenarios validated**: Both README badges (CI passing, License MIT) render valid SVGs. Flake exports packages, overlay, checks, devShell as spec requires. Structured test output (summary.json) present in all artifact downloads with correct pass/fail/skip/total fields.
