@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test App</title>
+</head>
+<body>
+  <button id="btn-tap">Tap Me</button>
+  <span id="counter">Count: 0</span>
+  <input id="input-text" type="text" placeholder="Type here">
+  <a id="link-page2" href="page2.html">Go to Page 2</a>
+  <script>
+    (function() {
+      var count = 0;
+      document.getElementById('btn-tap').onclick = function() {
+        count++;
+        document.getElementById('counter').textContent = 'Count: ' + count;
+      };
+    })();
+  </script>
+</body>
+</html>

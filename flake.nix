@@ -25,10 +25,7 @@
 
         test-app-android = import ./test-apps/android { inherit pkgs; };
 
-        test-app-web = pkgs.runCommand "test-app-web" { } ''
-          mkdir -p $out
-          echo "<html><body>placeholder</body></html>" > $out/index.html
-        '';
+        test-app-web = import ./test-apps/web { inherit pkgs; };
 
         # Android emulator SDK (for E2E tests — Linux only)
         androidEmulatorComposition = pkgs.androidenv.composeAndroidPackages {

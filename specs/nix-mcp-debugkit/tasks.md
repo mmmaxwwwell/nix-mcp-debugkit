@@ -96,7 +96,7 @@
 
 ## Phase 6: Browser Test App + E2E
 
-- [ ] T017 Create test-apps/web/ — static counter page [FR-041, FR-048] [produces: IC-005]
+- [x] T017 Create test-apps/web/ — static counter page [FR-041, FR-048] [produces: IC-005]
   Create `index.html`: button (id: btn-tap, text: "Tap Me"), span (id: counter, text: "Count: 0"), input (id: input-text, placeholder: "Type here"), link (id: link-page2, href: page2.html, text: "Go to Page 2"). Inline JS: button.onclick increments counter. Create `page2.html`: h1 (id: heading, text: "Page 2"), link back to index.html. Create `default.nix`: simple `runCommand` or `stdenv.mkDerivation` that copies files to $out. Package as `packages.${system}.test-app-web`.
   Done when: `nix build .#test-app-web` produces directory with index.html and page2.html; opening index.html in browser shows working counter
 
