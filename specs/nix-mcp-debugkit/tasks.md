@@ -104,7 +104,7 @@
   E2E orchestrator: (1) serve test-app-web via `python3 -m http.server <port>` in background, (2) wait for server ready (curl localhost:<port>, 15s), (3) start mcp-browser server, (4) exercise MCP tools: navigate to http://localhost:<port>/index.html, screenshot (verify base64 PNG response), click btn-tap (verify counter changes to "Count: 1" via page content read), fill input-text with "hello world" (verify value), navigate via link-page2 (verify page2 heading "Page 2" visible), (5) write structured results, (6) cleanup on EXIT.
   Done when: browser-e2e.sh passes with Chromium; `test-logs/browser-chromium/summary.json` shows pass > 0, fail == 0; all tool categories tested
 
-- [ ] T019 Create tests/browser-e2e-all.sh — Firefox + WebKit [FR-044, SC-010]
+- [x] T019 Create tests/browser-e2e-all.sh — Firefox + WebKit [FR-044, SC-010]
   CI-only script: (1) install Firefox and WebKit via `npx playwright install firefox webkit` (non-Nix, allowed in CI), (2) run same test logic as browser-e2e.sh but targeting each browser engine — check upstream @playwright/mcp CLI docs for exact flag syntax (may be `--browser firefox` or env var), (3) write separate structured results per browser to `test-logs/browser-firefox/` and `test-logs/browser-webkit/`.
   Done when: script passes when Firefox/WebKit are available; produces structured output for each browser; `shellcheck tests/browser-e2e-all.sh` passes
 

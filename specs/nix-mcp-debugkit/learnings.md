@@ -32,3 +32,7 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 - @playwright/mcp v0.0.56 tool names: `browser_navigate`, `browser_take_screenshot`, `browser_click`, `browser_type`, `browser_fill_form`, `browser_snapshot`, `browser_evaluate`. Use `--browser chromium` CLI flag to select engine.
 - `mcp_start` in common.sh was updated to forward extra args (`"$@"`) so browser-e2e.sh can pass `--browser $BROWSER`. Backward-compatible — existing callers with one arg still work.
 - `browser_snapshot` returns an accessibility tree with `[ref=<id>]` markers; parse refs with `grep -oP 'ref=\K[^\]]+'` and pass them to click/type tools for reliable element targeting.
+
+## T019 — tests/browser-e2e-all.sh (Firefox + WebKit)
+- browser-e2e.sh already supports `BROWSER_TYPE` env var, so browser-e2e-all.sh simply delegates to it in a loop — no need to duplicate test logic.
+- Each browser invocation needs a unique `BROWSER_E2E_PORT` to avoid port conflicts when run sequentially (and to be safe if parallelized later).
