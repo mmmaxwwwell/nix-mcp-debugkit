@@ -46,3 +46,7 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 
 - `aquasecurity/trivy-action@v0.31.0` uses input name `version` (not `trivy_version`) to pin the Trivy binary version. Using `trivy_version` silently falls back to default and may fail on binary install.
 - WebKit + Playwright MCP returns incomplete page snapshots in headless CI (GitHub Actions). Chromium and Firefox pass reliably. WebKit verification steps should use `continue-on-error: true` until upstream fixes land.
+
+## T030 — CI workflow fixes (attempt 3: idb Python mismatch)
+
+- On `macos-latest`, `brew install idb-companion` installs an `idb` shim at `/opt/homebrew/bin/idb` whose shebang points to Homebrew-managed Python. `pip3 install fb-idb` installs the `fb-idb` package into the system/runner Python, not Homebrew's Python, causing `ModuleNotFoundError` when the shim runs. Fix: use `pipx install fb-idb` (pre-installed on macOS runners) which creates an isolated virtualenv with its own `idb` entry point, and remove the broken Homebrew shim. Prepend `~/.local/bin` to PATH in the E2E step so the pipx binary is found inside `nix develop --command`.
