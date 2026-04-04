@@ -96,6 +96,20 @@
             bash smoke.sh
             cp -r test-logs "$out"
           '';
+        } // pkgs.lib.optionalAttrs isDarwin {
+          ios-e2e = pkgs.runCommand "ios-e2e" {
+            nativeBuildInputs = [
+              pkgs.bash
+              pkgs.jq
+              mcp-ios
+            ];
+          } ''
+            export HOME="$TMPDIR"
+            cp -r ${./tests}/* "$TMPDIR/"
+            cd "$TMPDIR"
+            bash ios-e2e.sh
+            cp -r test-logs "$out"
+          '';
         } // pkgs.lib.optionalAttrs (!isDarwin) {
           android-e2e = pkgs.runCommand "android-e2e" {
             nativeBuildInputs = [

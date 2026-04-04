@@ -120,7 +120,7 @@
   macOS-only E2E orchestrator: (1) list available simulators via `xcrun simctl list devices available`, pick an iPhone simulator, (2) boot simulator (`xcrun simctl boot <device-id>`), (3) wait for booted state (60s), (4) start mcp-ios server, (5) exercise MCP tools: screenshot (verify base64 PNG), tap center of screen (verify response), (6) write structured results, (7) cleanup: shutdown simulator on EXIT. Uses stock iOS apps (Settings, etc.) as test target since custom iOS apps can't be Nix-built.
   Done when: ios-e2e.sh passes on macOS with Xcode; `test-logs/ios/summary.json` shows pass > 0, fail == 0; screenshot and tap tools verified
 
-- [ ] T022 Wire iOS E2E into flake.nix checks [FR-007]
+- [x] T022 Wire iOS E2E into flake.nix checks [FR-007]
   Add `checks.${system}.ios-e2e` (darwin only).
   Done when: `nix flake check` includes ios-e2e on darwin
 

@@ -32,3 +32,7 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 - `ios-simulator-mcp` (v1.5.2) is the upstream package. Tool names are discovered at runtime via `tools/list` since they may vary across versions — the script probes for common names like `screenshot`, `take_screenshot`, `tap`, `click`.
 - `xcrun simctl list devices available -j` gives JSON output; use `jq` to pick an iPhone simulator by name pattern and state, avoiding fragile text parsing.
 - Stock iOS apps (e.g. `com.apple.Preferences`) serve as test targets since custom iOS apps can't be Nix-built.
+
+## T022 — Wire iOS E2E into flake.nix checks
+- iOS E2E check uses `pkgs.lib.optionalAttrs isDarwin` (same pattern as android-e2e uses `!isDarwin`). No `requiredSystemFeatures` needed — iOS Simulator doesn't require special hardware features like KVM.
+- The check only needs `bash`, `jq`, and `mcp-ios` in `nativeBuildInputs` — `xcrun`/`simctl` come from the macOS system and are available in the Nix build sandbox on darwin.
