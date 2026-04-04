@@ -36,3 +36,7 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 ## T019 — tests/browser-e2e-all.sh (Firefox + WebKit)
 - browser-e2e.sh already supports `BROWSER_TYPE` env var, so browser-e2e-all.sh simply delegates to it in a loop — no need to duplicate test logic.
 - Each browser invocation needs a unique `BROWSER_E2E_PORT` to avoid port conflicts when run sequentially (and to be safe if parallelized later).
+
+## T020 — Wire browser E2E into flake.nix checks
+- Browser E2E check doesn't need `requiredSystemFeatures = [ "kvm" ]` (unlike android-e2e) — Playwright/Chromium runs in headless mode without hardware acceleration requirements.
+- `PLAYWRIGHT_BROWSERS_PATH` is already baked into the mcp-browser wrapper via `makeWrapper`, so the check derivation doesn't need to set it explicitly.

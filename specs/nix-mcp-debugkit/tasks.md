@@ -108,7 +108,7 @@
   CI-only script: (1) install Firefox and WebKit via `npx playwright install firefox webkit` (non-Nix, allowed in CI), (2) run same test logic as browser-e2e.sh but targeting each browser engine — check upstream @playwright/mcp CLI docs for exact flag syntax (may be `--browser firefox` or env var), (3) write separate structured results per browser to `test-logs/browser-firefox/` and `test-logs/browser-webkit/`.
   Done when: script passes when Firefox/WebKit are available; produces structured output for each browser; `shellcheck tests/browser-e2e-all.sh` passes
 
-- [ ] T020 Wire browser E2E into flake.nix checks [FR-007]
+- [x] T020 Wire browser E2E into flake.nix checks [FR-007]
   Add `checks.${system}.browser-e2e` that runs browser-e2e.sh (Chromium only — Nix-packaged).
   Done when: `nix flake check` includes browser-e2e; check passes
 

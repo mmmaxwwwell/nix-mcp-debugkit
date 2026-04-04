@@ -117,6 +117,24 @@
             bash android-e2e.sh
             cp -r test-logs "$out"
           '';
+
+          browser-e2e = pkgs.runCommand "browser-e2e" {
+            nativeBuildInputs = [
+              pkgs.bash
+              pkgs.jq
+              pkgs.curl
+              pkgs.python3
+              mcp-browser
+              test-app-web
+            ];
+          } ''
+            export HOME="$TMPDIR"
+            export TEST_WEB_DIR="${test-app-web}"
+            cp -r ${./tests}/* "$TMPDIR/"
+            cd "$TMPDIR"
+            bash browser-e2e.sh
+            cp -r test-logs "$out"
+          '';
         };
       }
     ) // {
