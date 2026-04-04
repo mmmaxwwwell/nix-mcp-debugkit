@@ -160,7 +160,7 @@
   All scanners write JSON to `test-logs/security/`. Non-vacuous check: every scanner output > 0 bytes. Quality gate: fail on critical/high (except Snyk initially).
   Done when: security jobs run in CI; SARIF appears in GitHub Security tab; no critical findings
 
-- [ ] T026 Create local security scan script [reference: security.md]
+- [x] T026 Create local security scan script [reference: security.md]
   Create `scripts/security-scan.sh` that runs gitleaks, trivy, semgrep locally with JSON output to `test-logs/security/`. Summary at end. Include in devShell path.
   Done when: `security-scan.sh` runs locally and produces output; `shellcheck scripts/security-scan.sh` passes
 

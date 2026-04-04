@@ -30,3 +30,7 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 - `gitleaks/gitleaks-action@v2` uses `args` input (not CLI flags) and requires `GITLEAKS_LICENSE` secret for org repos; use `continue-on-error: true` for graceful degradation without the license.
 - Semgrep in CI runs best via `container: image: semgrep/semgrep` rather than installing the binary — avoids Python version conflicts and is the official recommended approach.
 - All SARIF upload steps need `permissions: security-events: write` on the job and a fallback to generate a minimal valid SARIF (`{"runs":[{"results":[]}]}`) when the scanner produces no output file.
+
+## T026 — Local security scan script
+- `gitleaks detect` exits non-zero when leaks are found but still writes the SARIF output file — treat non-zero exit as "findings detected" not "scanner failed".
+- Add `scripts/` to `$PATH` via `shellHook` in devShell so `security-scan.sh` is available without a path prefix.

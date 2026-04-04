@@ -74,6 +74,7 @@
             if [ -d .git ]; then
               git config core.hooksPath .githooks
             fi
+            export PATH="$PWD/scripts:$PATH"
           '';
         };
 
