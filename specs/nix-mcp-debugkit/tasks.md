@@ -150,7 +150,7 @@
 
 ## Phase 9: Security Scanning
 
-- [ ] T025 Add security scan jobs to ci.yml [FR-056, FR-057, FR-058]
+- [x] T025 Add security scan jobs to ci.yml [FR-056, FR-057, FR-058]
   Add jobs to ci.yml:
   - **security-gitleaks**: run gitleaks detect, output SARIF, upload via codeql-action/upload-sarif
   - **security-trivy**: run trivy fs scan, output SARIF, upload
