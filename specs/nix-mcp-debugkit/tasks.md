@@ -100,7 +100,7 @@
   Create `index.html`: button (id: btn-tap, text: "Tap Me"), span (id: counter, text: "Count: 0"), input (id: input-text, placeholder: "Type here"), link (id: link-page2, href: page2.html, text: "Go to Page 2"). Inline JS: button.onclick increments counter. Create `page2.html`: h1 (id: heading, text: "Page 2"), link back to index.html. Create `default.nix`: simple `runCommand` or `stdenv.mkDerivation` that copies files to $out. Package as `packages.${system}.test-app-web`.
   Done when: `nix build .#test-app-web` produces directory with index.html and page2.html; opening index.html in browser shows working counter
 
-- [ ] T018 Create tests/browser-e2e.sh — Chromium E2E [FR-043, SC-009] [consumes: IC-001, IC-002, IC-005]
+- [x] T018 Create tests/browser-e2e.sh — Chromium E2E [FR-043, SC-009] [consumes: IC-001, IC-002, IC-005]
   E2E orchestrator: (1) serve test-app-web via `python3 -m http.server <port>` in background, (2) wait for server ready (curl localhost:<port>, 15s), (3) start mcp-browser server, (4) exercise MCP tools: navigate to http://localhost:<port>/index.html, screenshot (verify base64 PNG response), click btn-tap (verify counter changes to "Count: 1" via page content read), fill input-text with "hello world" (verify value), navigate via link-page2 (verify page2 heading "Page 2" visible), (5) write structured results, (6) cleanup on EXIT.
   Done when: browser-e2e.sh passes with Chromium; `test-logs/browser-chromium/summary.json` shows pass > 0, fail == 0; all tool categories tested
 

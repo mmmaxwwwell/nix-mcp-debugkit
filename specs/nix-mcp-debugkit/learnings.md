@@ -9,15 +9,6 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 - Scripts created in `postFixup` (after Nix's automatic shebang patching and after `wrapProgram`) must use Nix store bash paths (`${pkgs.bash}/bin/bash`) instead of `#!/usr/bin/env bash` — the Nix build sandbox lacks `/usr/bin/env`. `patchShebangs` in postFixup does NOT work on these files.
 
 ## phase2-android-package-p-fix1 — Fix phase validation
-## T011 — ios/default.nix
-- `ios-simulator-mcp` 1.5.2 entry point is `build/index.js` (not `cli.js` like playwright). The bin field maps `ios-simulator-mcp` to `build/index.js`.
-- Inside `meta = with pkgs.lib; { ... }`, use `platforms.darwin` (not `lib.platforms.darwin`) since `with` already brings `lib` attrs into scope.
-- Wiring into flake.nix (replacing placeholder) is needed in the package task itself to satisfy done-when criteria — consistent with T008/T010 pattern.
-
-## T013 — Wire iOS into flake.nix (darwin-only)
-- T011 wired mcp-ios unconditionally; T013's real work is making it darwin-conditional using `lib.optionalAttrs isDarwin` for packages/overlays and `lib.optionals isDarwin` for list inputs (smoke test nativeBuildInputs).
-- In overlays (outside `eachDefaultSystem`), use `prev.lib` and `prev.stdenv.isDarwin` since `pkgs` isn't in scope — `prev` is the nixpkgs being overlaid.
-
 ## phase4-ios-package-p-fix1 — Smoke test platform skip
 - T013 made mcp-ios darwin-only in flake.nix but the smoke test's "binary exists" loop used `test_fail` for missing binaries. The `--check` and `--help` loops already handled missing binaries with `test_skip`, but the first loop needed an explicit platform check to skip mcp-ios on non-darwin instead of failing.
 
@@ -36,3 +27,8 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 
 ## phase5-android-test-app-e2e-fix1 — Unfree license fix
 - `config.android_sdk.accept_license = true` is NOT sufficient for Nix flake/pure evaluation — it only controls the Android SDK's internal license check. You also need `config.allowUnfree = true` (or a targeted `allowUnfreePredicate`) in the nixpkgs import config to prevent Nix from refusing to evaluate the `androidsdk` derivation.
+
+## T018 — tests/browser-e2e.sh (Chromium E2E)
+- @playwright/mcp v0.0.56 tool names: `browser_navigate`, `browser_take_screenshot`, `browser_click`, `browser_type`, `browser_fill_form`, `browser_snapshot`, `browser_evaluate`. Use `--browser chromium` CLI flag to select engine.
+- `mcp_start` in common.sh was updated to forward extra args (`"$@"`) so browser-e2e.sh can pass `--browser $BROWSER`. Backward-compatible — existing callers with one arg still work.
+- `browser_snapshot` returns an accessibility tree with `[ref=<id>]` markers; parse refs with `grep -oP 'ref=\K[^\]]+'` and pass them to click/type tools for reliable element targeting.

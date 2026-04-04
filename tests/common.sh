@@ -91,13 +91,14 @@ ENDJSON
 
 mcp_start() {
   local binary="${1:?mcp_start requires a binary path}"
+  shift
   local stdin_fifo stdout_fifo
   stdin_fifo=$(mktemp -u /tmp/mcp_stdin.XXXXXX)
   stdout_fifo=$(mktemp -u /tmp/mcp_stdout.XXXXXX)
   mkfifo "$stdin_fifo"
   mkfifo "$stdout_fifo"
 
-  "$binary" < "$stdin_fifo" > "$stdout_fifo" 2>/dev/null &
+  "$binary" "$@" < "$stdin_fifo" > "$stdout_fifo" 2>/dev/null &
   _MCP_PID=$!
   _MCP_STDIN="$stdin_fifo"
   _MCP_STDOUT="$stdout_fifo"
