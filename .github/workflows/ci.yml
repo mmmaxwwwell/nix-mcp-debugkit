@@ -41,7 +41,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v27
+      - uses: cachix/install-nix-action@v30
         with:
           nix_path: nixpkgs=channel:nixpkgs-unstable
       - name: Build mcp-ios
@@ -93,6 +93,8 @@ jobs:
           nix_path: nixpkgs=channel:nixpkgs-unstable
       - name: Run Chromium E2E tests
         run: nix develop --command bash tests/browser-e2e.sh
+        env:
+          PLAYWRIGHT_CHROMIUM_SANDBOX: "0"
       - name: Verify Chromium non-vacuous results
         run: |
           test -f test-logs/browser/summary.json
@@ -101,6 +103,8 @@ jobs:
           test "$pass" -gt 0
       - name: Run Firefox + WebKit E2E tests
         run: nix develop --command bash tests/browser-e2e-all.sh
+        env:
+          PLAYWRIGHT_CHROMIUM_SANDBOX: "0"
       - name: Verify Firefox non-vacuous results
         run: |
           test -f test-logs/browser-firefox/summary.json
@@ -124,7 +128,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v27
+      - uses: cachix/install-nix-action@v30
         with:
           nix_path: nixpkgs=channel:nixpkgs-unstable
       - name: Run iOS E2E tests
@@ -164,7 +168,7 @@ jobs:
           if [ -f gitleaks-results.sarif ]; then
             cp gitleaks-results.sarif test-logs/security/gitleaks.sarif.json
           else
-            echo '{"runs":[{"results":[]}]}' > test-logs/security/gitleaks.sarif.json
+            echo '{"$schema":"https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"gitleaks","version":"1.0"}},"results":[]}]}' > test-logs/security/gitleaks.sarif.json
           fi
       - name: Upload SARIF
         if: always()
@@ -193,7 +197,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run Trivy filesystem scan
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.28.0
         with:
           scan-type: fs
           scan-ref: .
@@ -207,7 +211,7 @@ jobs:
           if [ -f trivy-results.sarif ]; then
             cp trivy-results.sarif test-logs/security/trivy.sarif.json
           else
-            echo '{"runs":[{"results":[]}]}' > test-logs/security/trivy.sarif.json
+            echo '{"$schema":"https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"trivy","version":"1.0"}},"results":[]}]}' > test-logs/security/trivy.sarif.json
           fi
       - name: Upload SARIF
         if: always()
@@ -249,7 +253,7 @@ jobs:
           if [ -f semgrep-results.sarif ]; then
             cp semgrep-results.sarif test-logs/security/semgrep.sarif.json
           else
-            echo '{"runs":[{"results":[]}]}' > test-logs/security/semgrep.sarif.json
+            echo '{"$schema":"https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"semgrep","version":"1.0"}},"results":[]}]}' > test-logs/security/semgrep.sarif.json
           fi
       - name: Upload SARIF
         if: always()
@@ -281,13 +285,14 @@ jobs:
       - name: Set up Snyk
         uses: snyk/actions/setup@master
       - name: Run Snyk test
+        if: env.SNYK_TOKEN != ''
         run: |
           mkdir -p test-logs/security
           snyk test --all-projects --sarif-file-output=test-logs/security/snyk.sarif.json || true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       - name: Run Snyk monitor (main branch only)
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && env.SNYK_TOKEN != ''
         run: snyk monitor --all-projects || true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -296,7 +301,7 @@ jobs:
         run: |
           mkdir -p test-logs/security
           if [ ! -f test-logs/security/snyk.sarif.json ]; then
-            echo '{"runs":[{"results":[]}]}' > test-logs/security/snyk.sarif.json
+            echo '{"$schema":"https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"snyk","version":"1.0"}},"results":[]}]}' > test-logs/security/snyk.sarif.json
           fi
       - name: Upload SARIF
         if: always()
@@ -320,11 +325,13 @@ jobs:
 
   security-sonarcloud:
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: SonarCloud Scan
+        if: env.SONAR_TOKEN != ''
         uses: SonarSource/sonarqube-scan-action@v4
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

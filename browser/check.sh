@@ -39,7 +39,7 @@ if [ "$failed" -eq 0 ]; then
     failed=1
   else
     version_output=""
-    if version_output=$("$chromium" --headless --disable-gpu --dump-dom about:blank 2>&1); then
+    if version_output=$("$chromium" --headless --no-sandbox --disable-gpu --dump-dom about:blank 2>&1); then
       chrome_version=$("$chromium" --version 2>&1 || true)
       printf '%s\n' "✓ Chromium launchable: $chrome_version"
     else

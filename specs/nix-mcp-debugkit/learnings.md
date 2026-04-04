@@ -23,3 +23,20 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 
 - `nix flake check` (with builds) requires the nix daemon socket (`NIX_REMOTE=daemon`) when the nix store is owned by `nobody`. Use `--no-build` for evaluation-only validation when sandbox builds aren't feasible (e.g., no KVM for android-e2e).
 - browser-e2e.sh needs `mcp-browser` on PATH and `TEST_WEB_DIR` set — build both with `nix build .#mcp-browser` and `nix build .#test-app-web` first.
+
+## T030 — E2E checks removed from flake.nix
+
+- E2E test checks (android-e2e, browser-e2e, ios-e2e) were removed from `checks.*` in flake.nix. The Nix build sandbox cannot provide KVM (android emulator), real browser processes, or macOS simulators. These tests run only in CI workflow steps (`.github/workflows/ci.yml`) where the runners have the required hardware/capabilities. `nix flake check` now runs smoke tests only.
+
+## T030 — Dependabot security_update_not_possible
+
+- `ios-simulator-mcp@1.5.2` (latest as of 2026-04) hard-pins `@modelcontextprotocol/sdk` at `1.18.2`. The lowest non-vulnerable SDK version is `1.26.0`, so Dependabot cannot resolve the conflict and exits 1 (`security_update_not_possible`).
+- Fix: create `.github/dependabot.yml` with an `ignore` rule for `@modelcontextprotocol/sdk` in the `/ios` directory. Remove the ignore once upstream `ios-simulator-mcp` supports SDK >= 1.26.0.
+
+## T030 — CI workflow fixes (attempt 2)
+
+- `cachix/install-nix-action@v27` fails on macOS runners with `DS Error: -14135 (eDSRecordAlreadyExists)` when `nixbld` users already exist. Upgrade to `@v30` which handles this.
+- `aquasecurity/trivy-action` uses `v`-prefixed tags (e.g., `@v0.28.0` not `@0.28.0`).
+- Fallback SARIF JSON `{"runs":[{"results":[]}]}` is invalid — must include `$schema`, `version`, and `runs[].tool.driver` fields for `github/codeql-action/upload-sarif` to accept it.
+- Chromium in the Nix build sandbox fails with "sandboxing failed" because user namespaces aren't available. Pass `--no-sandbox` in check scripts and set `PLAYWRIGHT_CHROMIUM_SANDBOX=0` env in CI.
+- Security scanner jobs (Snyk, SonarCloud) should use `if: env.TOKEN != ''` guards and `continue-on-error: true` to gracefully skip when secrets aren't configured.
