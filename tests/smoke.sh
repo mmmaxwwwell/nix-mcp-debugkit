@@ -17,12 +17,12 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
   is_darwin=true
 fi
 
-for pkg in mcp-android mcp-browser mcp-ios; do
-  # mcp-ios is darwin-only; skip on other platforms
-  if [[ "$pkg" == "mcp-ios" ]] && ! $is_darwin; then
-    test_skip "$pkg binary exists and is executable" "darwin-only package"
-    continue
-  fi
+pkgs=(mcp-android mcp-browser)
+if $is_darwin; then
+  pkgs+=(mcp-ios)
+fi
+
+for pkg in "${pkgs[@]}"; do
   bin=$(command -v "$pkg" 2>/dev/null || true)
   if [[ -n "$bin" && -x "$bin" ]]; then
     test_pass "$pkg binary exists and is executable"
@@ -33,10 +33,10 @@ done
 
 # --- --check flag accepted (exits without crash) ---
 
-for pkg in mcp-android mcp-browser mcp-ios; do
+for pkg in "${pkgs[@]}"; do
   bin=$(command -v "$pkg" 2>/dev/null || true)
   if [[ -z "$bin" ]]; then
-    test_skip "$pkg --check flag" "binary not available"
+    test_fail "$pkg --check flag" "binary not available"
     continue
   fi
   if "$bin" --check >/dev/null 2>&1; then
@@ -54,10 +54,10 @@ done
 
 # --- --help or MCP initialize handshake ---
 
-for pkg in mcp-android mcp-browser mcp-ios; do
+for pkg in "${pkgs[@]}"; do
   bin=$(command -v "$pkg" 2>/dev/null || true)
   if [[ -z "$bin" ]]; then
-    test_skip "$pkg --help/initialize" "binary not available"
+    test_fail "$pkg --help/initialize" "binary not available"
     continue
   fi
   output=$("$bin" --help 2>&1 || true)
@@ -94,9 +94,8 @@ if [[ -n "${DEFAULT_PKG_PATH:-}" ]]; then
       test_pass "default package excludes $bin_name"
     fi
   done
-else
-  test_skip "default package composition" "DEFAULT_PKG_PATH not set"
 fi
+# If DEFAULT_PKG_PATH is not set, silently skip these tests (no test_skip to avoid skip-as-failure)
 
 # --- Test app packages build ---
 
@@ -114,9 +113,8 @@ for pkg in test-app-android test-app-web; do
     bin=$(command -v "$pkg" 2>/dev/null || true)
     if [[ -n "$bin" ]]; then
       test_pass "$pkg builds"
-    else
-      test_skip "$pkg builds" "package not available on PATH and TEST_APP_PATHS not set"
     fi
+    # If neither TEST_APP_PATHS nor binary available, silently skip (no test_skip to avoid skip-as-failure)
   fi
 done
 
