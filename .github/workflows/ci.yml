@@ -158,13 +158,15 @@ jobs:
         run: |
           brew tap facebook/fb
           brew install idb-companion
-          pip3 install --break-system-packages fb-idb
+          # Remove Homebrew's broken idb shim (uses wrong Python) and install via pipx
+          rm -f /opt/homebrew/bin/idb
+          pipx install fb-idb
       - name: Build test prerequisites
         run: |
           nix build .#mcp-ios
       - name: Run iOS E2E tests
         run: |
-          export PATH="$(nix build .#mcp-ios --print-out-paths)/bin:$PATH"
+          export PATH="$HOME/.local/bin:$(nix build .#mcp-ios --print-out-paths)/bin:$PATH"
           nix develop --command bash tests/ios-e2e.sh
       - name: Upload test logs
         if: always()
