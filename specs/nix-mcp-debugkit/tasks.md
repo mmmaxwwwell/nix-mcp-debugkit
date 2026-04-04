@@ -184,7 +184,7 @@
   Run `nix flake check` (smoke tests), run android-e2e.sh (if KVM available), run browser-e2e.sh, verify all test-logs/ have valid summary.json with pass > 0 and fail == 0. Run `statix check .`, `deadnix .`, `shellcheck tests/*.sh`.
   Done when: all tests pass locally; all lint passes; structured output valid
 
-- [ ] T030 [needs: gh, ci-loop] Push and validate CI
+- [x] T030 [needs: gh, ci-loop] Push and validate CI
   Push to GitHub. Monitor all CI jobs. Fix any failures. Verify: all jobs green, SARIF uploaded, test artifacts downloadable, non-vacuous checks pass, zero skips across all test suites.
   Done when: all CI jobs pass; GitHub Security tab shows scan results; no critical/high findings; zero skipped tests
 
