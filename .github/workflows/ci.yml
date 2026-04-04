@@ -109,8 +109,8 @@ jobs:
           PLAYWRIGHT_CHROMIUM_SANDBOX: "0"
       - name: Verify Chromium non-vacuous results
         run: |
-          test -f test-logs/browser/summary.json
-          pass=$(jq '.pass' test-logs/browser/summary.json)
+          test -f test-logs/browser-chromium/summary.json
+          pass=$(jq '.pass' test-logs/browser-chromium/summary.json)
           echo "Browser (Chromium) E2E pass count: $pass"
           test "$pass" -gt 0
       - name: Run Firefox + WebKit E2E tests
