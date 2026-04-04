@@ -172,7 +172,7 @@
   Human-facing README with: project overview, badges (CI status, license), quick start (`nix run github:mmmaxwwwell/nix-mcp-debugkit#mcp-browser`), flake input usage (individual, default, overlay), Claude Code MCP config JSON examples (all 3 targets), prerequisites per target (KVM, Xcode), `--check` usage for agents, troubleshooting (common errors, browser version mismatch, KVM missing), CI setup for contributors (SNYK_TOKEN, SONAR_TOKEN), contributing section, license.
   Done when: README renders correctly; all nix run commands are accurate; MCP config JSON is valid; prerequisites listed per target
 
-- [ ] T028 Document CI secrets in README
+- [~] T028 Document CI secrets in README — already completed by T027 (README lines 188-211 contain full CI Setup section with SNYK_TOKEN, SONAR_TOKEN, and optional secrets instructions)
   Add CI Setup section: how to get SNYK_TOKEN (snyk.io free signup), how to set up SonarCloud (free for public repos), where to add as GitHub secrets.
   Done when: README has CI Setup section with step-by-step instructions for both tokens
 
