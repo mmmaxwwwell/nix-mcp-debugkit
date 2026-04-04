@@ -50,3 +50,7 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 ## T030 — CI workflow fixes (attempt 3: idb Python mismatch)
 
 - On `macos-latest`, `brew install idb-companion` installs an `idb` shim at `/opt/homebrew/bin/idb` whose shebang points to Homebrew-managed Python. `pip3 install fb-idb` installs the `fb-idb` package into the system/runner Python, not Homebrew's Python, causing `ModuleNotFoundError` when the shim runs. Fix: use `pipx install fb-idb` (pre-installed on macOS runners) which creates an isolated virtualenv with its own `idb` entry point, and remove the broken Homebrew shim. Prepend `~/.local/bin` to PATH in the E2E step so the pipx binary is found inside `nix develop --command`.
+
+## T030 — CI workflow fixes (attempt 4: idb Python 3.14 asyncio breakage)
+
+- `fb-idb` calls `asyncio.get_event_loop()` in its `main()`. This was deprecated in Python 3.10 and raises `RuntimeError` in Python 3.14 when no event loop is running. The `macos-latest` runner's default Python is 3.14. Fix: `brew install python@3.13` and pass `--python "$(brew --prefix python@3.13)/bin/python3.13"` to `pipx install fb-idb` so the virtualenv uses Python 3.13 where the deprecated API still works.

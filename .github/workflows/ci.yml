@@ -160,7 +160,10 @@ jobs:
           brew install idb-companion
           # Remove Homebrew's broken idb shim (uses wrong Python) and install via pipx
           rm -f /opt/homebrew/bin/idb
-          pipx install fb-idb
+          # fb-idb uses asyncio.get_event_loop() which raises RuntimeError on Python 3.14+
+          # Pin to Python 3.13 where the deprecated API still works
+          brew install python@3.13
+          pipx install fb-idb --python "$(brew --prefix python@3.13)/bin/python3.13"
       - name: Build test prerequisites
         run: |
           nix build .#mcp-ios
