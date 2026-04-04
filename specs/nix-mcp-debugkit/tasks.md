@@ -180,7 +180,7 @@
 
 ## Phase 11: Final Validation
 
-- [ ] T029 Run full local validation
+- [x] T029 Run full local validation
   Run `nix flake check` (smoke tests), run android-e2e.sh (if KVM available), run browser-e2e.sh, verify all test-logs/ have valid summary.json with pass > 0 and fail == 0. Run `statix check .`, `deadnix .`, `shellcheck tests/*.sh`.
   Done when: all tests pass locally; all lint passes; structured output valid
 
