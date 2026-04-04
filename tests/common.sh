@@ -64,6 +64,13 @@ finish_test_run() {
     exit 1
   fi
 
+  # Skip-as-failure check: skipped tests mean a broken environment
+  if (( _TEST_SKIP > 0 )); then
+    printf "ERROR: %d test(s) skipped for target '%s' — skips are treated as failures\n" "$_TEST_SKIP" "$_TEST_TARGET" >&2
+    printf "If a test cannot run on this platform, remove it from the test list instead of skipping.\n" >&2
+    return 1
+  fi
+
   local summary
   summary=$(cat <<ENDJSON
 {

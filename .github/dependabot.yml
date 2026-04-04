@@ -1,13 +1,4 @@
 version: 2
-updates:
-  - package-ecosystem: "npm"
-    directory: "/ios"
-    schedule:
-      interval: "weekly"
-    ignore:
-      # ios-simulator-mcp@1.5.2 (latest) hard-pins @modelcontextprotocol/sdk
-      # at exactly 1.18.2. The lowest non-vulnerable SDK version is 1.26.0,
-      # but no ios-simulator-mcp release supports it yet. Dependabot cannot
-      # resolve this conflict and fails with security_update_not_possible.
-      # Ignore SDK updates in ios/ until upstream releases a compatible version.
-      - dependency-name: "@modelcontextprotocol/sdk"
+# Temporarily disabled during initial CI stabilization.
+# Re-enable once T030 is complete.
+updates: []

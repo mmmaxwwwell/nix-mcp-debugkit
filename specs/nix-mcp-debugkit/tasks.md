@@ -185,8 +185,15 @@
   Done when: all tests pass locally; all lint passes; structured output valid
 
 - [ ] T030 [needs: gh, ci-loop] Push and validate CI
-  Push to GitHub. Monitor all CI jobs. Fix any failures. Verify: all jobs green, SARIF uploaded, test artifacts downloadable, non-vacuous checks pass.
-  Done when: all CI jobs pass; GitHub Security tab shows scan results; no critical/high findings
+  Push to GitHub. Monitor all CI jobs. Fix any failures. Verify: all jobs green, SARIF uploaded, test artifacts downloadable, non-vacuous checks pass, zero skips across all test suites.
+  Done when: all CI jobs pass; GitHub Security tab shows scan results; no critical/high findings; zero skipped tests
+
+- [x] T030a Fix skip-as-failure, idb installation, and WebKit continue-on-error [FR-047a, FR-059a, FR-059b]
+  Three CI bugs found where tests silently degraded:
+  (1) common.sh treated skips as neutral — added skip-as-failure check: if skip > 0, test run fails.
+  (2) ios-e2e.sh caught missing idb and called test_skip instead of test_fail — removed the skip fallback, now a hard fail. CI installs fb-idb (Python CLI) in addition to idb-companion (the brew daemon).
+  (3) ci.yml had continue-on-error: true on Firefox+WebKit test step AND WebKit verification step — removed both so WebKit failures actually fail CI.
+  Done when: common.sh fails on skip > 0; ios-e2e.sh has no test_skip calls; ci.yml has no continue-on-error on test/verification steps; idb CLI is installed in iOS CI job
 
 - [ ] T031 [needs: gh] Observable output validation
   Verify README badges render. Verify CI artifacts are downloadable. Verify `nix run github:mmmaxwwwell/nix-mcp-debugkit#mcp-browser` works from a clean system. Run acceptance scenarios from spec.

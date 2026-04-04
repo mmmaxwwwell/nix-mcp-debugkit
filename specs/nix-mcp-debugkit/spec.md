@@ -182,6 +182,7 @@ An agent runs `mcp-android --check` before starting a debugging session. The che
 - **FR-045**: iOS E2E tests MUST boot an iOS simulator, start the mcp-ios server, and exercise basic tools (screenshot, tap) on a macOS CI runner. The test target is a stock iOS app (e.g., Settings or a pre-installed sample app) since building a custom iOS app in Nix is impractical without Xcode's proprietary build system. If a custom test app is needed, it is built via `xcodebuild` in the macOS CI step, not via Nix.
 - **FR-046**: All test output MUST be structured and agent-readable: `test-logs/<type>/<timestamp>/summary.json` with pass/fail/skip counts and `failures/<test-name>.log` with assertion details
 - **FR-047**: All test suites MUST assert non-vacuous execution — a test run that reports 0 passed / 0 failed MUST be treated as a failure
+- **FR-047a**: All test suites MUST treat skipped tests as failures — a test run with skip > 0 MUST exit non-zero. If a test cannot run on a platform, it should not be included in the test list for that platform (use conditional registration, not runtime skips)
 - **FR-048**: Test apps MUST be exposed as flake packages: `packages.${system}.test-app-android` (APK) and `packages.${system}.test-app-web` (static site directory)
 
 ### Functional Requirements — CI/CD
@@ -196,6 +197,8 @@ An agent runs `mcp-android --check` before starting a debugging session. The che
 - **FR-057**: CI MUST run Snyk and SonarCloud (free for public repos) for additional security coverage
 - **FR-058**: CI MUST block merges on: test failures, security findings (critical/high), secrets detected, build failures
 - **FR-059**: CI MUST verify non-vacuous test execution in every test job (0 tests = failure)
+- **FR-059a**: CI MUST NOT use `continue-on-error: true` on test execution or test verification steps — if a test is flaky, fix it or exclude it from the matrix with an explicit comment
+- **FR-059b**: CI MUST ensure all test dependencies are installed (e.g., `idb` CLI for iOS tap tests, browser engines for E2E) so that no tests are skipped due to missing tools
 - **FR-060**: CI MUST include a Gitleaks pre-commit hook configured in the repo
 
 ### Functional Requirements — Packaging Constraints
