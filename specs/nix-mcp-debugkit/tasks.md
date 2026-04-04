@@ -128,7 +128,7 @@
 
 ## Phase 8: CI Pipeline
 
-- [ ] T023 Create .github/workflows/ci.yml — full pipeline [FR-050 through FR-055, FR-058, FR-059]
+- [x] T023 Create .github/workflows/ci.yml — full pipeline [FR-050 through FR-055, FR-058, FR-059]
   GitHub Actions workflow triggered on push and PR to main. Jobs:
   - **lint**: install Nix, `nix develop --command statix check .`, `nix develop --command deadnix .`, `nix develop --command shellcheck tests/*.sh`
   - **build-linux** (ubuntu-latest): `nix build .#mcp-android`, `nix build .#mcp-browser`, `nix build .#test-app-android`, `nix build .#test-app-web`

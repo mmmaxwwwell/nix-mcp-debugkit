@@ -1,0 +1,143 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixpkgs-unstable
+      - name: Run statix
+        run: nix develop --command statix check .
+      - name: Run deadnix
+        run: nix develop --command deadnix .
+      - name: Run shellcheck
+        run: nix develop --command shellcheck tests/*.sh
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixpkgs-unstable
+      - name: Build mcp-android
+        run: nix build .#mcp-android
+      - name: Build mcp-browser
+        run: nix build .#mcp-browser
+      - name: Build test-app-android
+        run: nix build .#test-app-android
+      - name: Build test-app-web
+        run: nix build .#test-app-web
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixpkgs-unstable
+      - name: Build mcp-ios
+        run: nix build .#mcp-ios
+
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixpkgs-unstable
+      - name: Run smoke tests
+        run: nix flake check
+
+  e2e-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixpkgs-unstable
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Run Android E2E tests
+        run: nix develop --command bash tests/android-e2e.sh
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-e2e-logs
+          path: test-logs/
+      - name: Verify non-vacuous results
+        run: |
+          test -f test-logs/android/summary.json
+          pass=$(jq '.pass' test-logs/android/summary.json)
+          echo "Android E2E pass count: $pass"
+          test "$pass" -gt 0
+
+  e2e-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixpkgs-unstable
+      - name: Run Chromium E2E tests
+        run: nix develop --command bash tests/browser-e2e.sh
+      - name: Verify Chromium non-vacuous results
+        run: |
+          test -f test-logs/browser/summary.json
+          pass=$(jq '.pass' test-logs/browser/summary.json)
+          echo "Browser (Chromium) E2E pass count: $pass"
+          test "$pass" -gt 0
+      - name: Run Firefox + WebKit E2E tests
+        run: nix develop --command bash tests/browser-e2e-all.sh
+      - name: Verify Firefox non-vacuous results
+        run: |
+          test -f test-logs/browser-firefox/summary.json
+          pass=$(jq '.pass' test-logs/browser-firefox/summary.json)
+          echo "Browser (Firefox) E2E pass count: $pass"
+          test "$pass" -gt 0
+      - name: Verify WebKit non-vacuous results
+        run: |
+          test -f test-logs/browser-webkit/summary.json
+          pass=$(jq '.pass' test-logs/browser-webkit/summary.json)
+          echo "Browser (WebKit) E2E pass count: $pass"
+          test "$pass" -gt 0
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-e2e-logs
+          path: test-logs/
+
+  e2e-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixpkgs-unstable
+      - name: Run iOS E2E tests
+        run: nix develop --command bash tests/ios-e2e.sh
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-e2e-logs
+          path: test-logs/
+      - name: Verify non-vacuous results
+        run: |
+          test -f test-logs/ios/summary.json
+          pass=$(jq '.pass' test-logs/ios/summary.json)
+          echo "iOS E2E pass count: $pass"
+          test "$pass" -gt 0
