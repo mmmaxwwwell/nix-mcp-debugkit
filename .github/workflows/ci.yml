@@ -149,6 +149,10 @@ jobs:
       - uses: cachix/install-nix-action@v30
         with:
           nix_path: nixpkgs=channel:nixpkgs-unstable
+      - name: Install idb-companion
+        run: |
+          brew tap facebook/fb
+          brew install idb-companion
       - name: Build test prerequisites
         run: |
           nix build .#mcp-ios
@@ -222,6 +226,7 @@ jobs:
       - name: Run Trivy filesystem scan
         uses: aquasecurity/trivy-action@v0.31.0
         with:
+          trivy_version: "v0.62.2"
           scan-type: fs
           scan-ref: .
           format: sarif

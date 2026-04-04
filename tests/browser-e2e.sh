@@ -93,7 +93,7 @@ fi
 # Ensure Chromium runs without sandbox in CI (GitHub Actions runs as root)
 export PLAYWRIGHT_CHROMIUM_SANDBOX=0
 export PLAYWRIGHT_LAUNCH_OPTIONS='{"args":["--no-sandbox","--disable-setuid-sandbox"]}'
-mcp_start "$mcp_browser_bin" --browser "$BROWSER"
+mcp_start "$mcp_browser_bin" --browser "$BROWSER" --no-sandbox
 sleep 2
 
 # Initialize MCP connection

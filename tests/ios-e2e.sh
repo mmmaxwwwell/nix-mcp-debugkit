@@ -182,7 +182,12 @@ if printf "%s" "$tap_resp" | jq -e '.result' >/dev/null 2>&1; then
   is_error=$(printf "%s" "$tap_resp" | jq -r '.result.isError // false' 2>/dev/null)
   if [[ "$is_error" == "true" ]]; then
     err_text=$(printf "%s" "$tap_resp" | jq -r '.result.content[0].text // empty' 2>/dev/null)
-    test_fail "tap center of screen" "tool returned error: $err_text"
+    # If idb is missing, skip instead of fail (idb is optional for tap interactions)
+    if [[ "$err_text" == *"idb"* ]] || [[ "$err_text" == *"ENOENT"* ]]; then
+      test_skip "tap center of screen" "idb not available: $err_text"
+    else
+      test_fail "tap center of screen" "tool returned error: $err_text"
+    fi
   else
     test_pass "tap center of screen"
   fi
