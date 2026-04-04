@@ -89,6 +89,14 @@ if ! wait_for "simulator booted" \
 fi
 test_pass "simulator boot"
 
+# Connect idb to the booted simulator (best effort — idb is fragile in CI)
+echo "=== Connecting idb to simulator ==="
+if command -v idb >/dev/null 2>&1; then
+  idb connect "$SIMULATOR_UDID" 2>&1 || echo "Warning: idb connect failed (non-fatal)"
+else
+  echo "Warning: idb not found on PATH, skipping idb connect"
+fi
+
 # Open Settings app as a test target (stock app, always available)
 echo "=== Launching Settings app ==="
 xcrun simctl launch "$SIMULATOR_UDID" com.apple.Preferences 2>&1 || true
