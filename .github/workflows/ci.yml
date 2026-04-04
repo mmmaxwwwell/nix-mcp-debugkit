@@ -69,8 +69,14 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
+      - name: Build test prerequisites
+        run: |
+          nix build .#test-app-android .#mcp-android
       - name: Run Android E2E tests
-        run: nix develop --command bash tests/android-e2e.sh
+        run: |
+          export TEST_APK_PATH=$(nix build .#test-app-android --print-out-paths)/test-app-android.apk
+          export PATH="$(nix build .#mcp-android --print-out-paths)/bin:$PATH"
+          nix develop --command bash tests/android-e2e.sh
       - name: Upload test logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -91,8 +97,14 @@ jobs:
       - uses: cachix/install-nix-action@v27
         with:
           nix_path: nixpkgs=channel:nixpkgs-unstable
+      - name: Build test prerequisites
+        run: |
+          nix build .#test-app-web .#mcp-browser
       - name: Run Chromium E2E tests
-        run: nix develop --command bash tests/browser-e2e.sh
+        run: |
+          export TEST_WEB_DIR=$(nix build .#test-app-web --print-out-paths)
+          export PATH="$(nix build .#mcp-browser --print-out-paths)/bin:$PATH"
+          nix develop --command bash tests/browser-e2e.sh
         env:
           PLAYWRIGHT_CHROMIUM_SANDBOX: "0"
       - name: Verify Chromium non-vacuous results
@@ -102,7 +114,10 @@ jobs:
           echo "Browser (Chromium) E2E pass count: $pass"
           test "$pass" -gt 0
       - name: Run Firefox + WebKit E2E tests
-        run: nix develop --command bash tests/browser-e2e-all.sh
+        run: |
+          export TEST_WEB_DIR=$(nix build .#test-app-web --print-out-paths)
+          export PATH="$(nix build .#mcp-browser --print-out-paths)/bin:$PATH"
+          nix develop --command bash tests/browser-e2e-all.sh
         env:
           PLAYWRIGHT_CHROMIUM_SANDBOX: "0"
       - name: Verify Firefox non-vacuous results
@@ -131,8 +146,13 @@ jobs:
       - uses: cachix/install-nix-action@v30
         with:
           nix_path: nixpkgs=channel:nixpkgs-unstable
+      - name: Build test prerequisites
+        run: |
+          nix build .#mcp-ios
       - name: Run iOS E2E tests
-        run: nix develop --command bash tests/ios-e2e.sh
+        run: |
+          export PATH="$(nix build .#mcp-ios --print-out-paths)/bin:$PATH"
+          nix develop --command bash tests/ios-e2e.sh
       - name: Upload test logs
         if: always()
         uses: actions/upload-artifact@v4
