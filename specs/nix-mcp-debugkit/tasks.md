@@ -199,6 +199,6 @@
   Verify README badges render. Verify CI artifacts are downloadable. Verify `nix run github:mmmaxwwwell/nix-mcp-debugkit#mcp-browser` works from a clean system. Run acceptance scenarios from spec.
   Done when: badges render correctly; remote nix run works; acceptance scenarios verified
 
-- [ ] REVIEW Code review [all phases]
+- [x] REVIEW Code review [all phases]
   Review all code for: Nix expression quality, shell script safety, test coverage completeness, documentation accuracy, security (no hardcoded secrets, no unsafe shell expansions). Write REVIEW-TODO.md with findings. Fix issues. Re-run fix-validate loop.
   Done when: no critical findings in review; all fixes applied; tests still pass

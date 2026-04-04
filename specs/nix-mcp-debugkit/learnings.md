@@ -74,3 +74,9 @@ Discoveries, gotchas, and decisions recorded by the implementation agent across 
 - **Remote `nix run` cannot be tested in sandboxed environments** where the Nix store is read-only (`/nix/var/nix/db/big-lock: Permission denied`). Validate via: (1) flake structure inspection confirming `packages.<system>.mcp-browser` is exported, (2) CI build jobs (build-linux, build-macos) already proving `nix build` succeeds, (3) `gh api` to verify repo contents on default branch.
 - **All 9 CI artifacts remain downloadable** via `gh api .../artifacts/<id>/zip` — none expired. Browser E2E: Chromium 7/7, Firefox 7/7, WebKit 5/7; Android 10/10; iOS 4/5 (idb tap known issue).
 - **Acceptance scenarios validated**: Both README badges (CI passing, License MIT) render valid SVGs. Flake exports packages, overlay, checks, devShell as spec requires. Structured test output (summary.json) present in all artifact downloads with correct pass/fail/skip/total fields.
+
+## REVIEW — Code review findings
+
+- **`snyk/actions/setup@master` was the only unpinned action** in ci.yml — all others used version tags. Pinned to `@0.4.0`. When adding new GitHub Actions, always pin to a specific version tag.
+- **CI shellcheck coverage gap**: `shellcheck --severity=warning tests/*.sh` missed 4 shell scripts outside `tests/` (scripts/security-scan.sh, android/check.sh, browser/check.sh, ios/check.sh). Expanded glob to cover all .sh files.
+- **Dependabot was left disabled** after T030 stabilization. The comment "re-enable once T030 is complete" was still present. Enabled with npm (browser, ios) and github-actions ecosystems, including the `@modelcontextprotocol/sdk` ignore rule for ios.

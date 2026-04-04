@@ -1,4 +1,20 @@
 version: 2
-# Temporarily disabled during initial CI stabilization.
-# Re-enable once T030 is complete.
-updates: []
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: npm
+    directory: /browser
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: npm
+    directory: /ios
+    schedule:
+      interval: weekly
+    ignore:
+      # ios-simulator-mcp@1.5.2 hard-pins @modelcontextprotocol/sdk@1.18.2.
+      # The lowest non-vulnerable version is 1.26.0 which upstream doesn't support yet.
+      - dependency-name: "@modelcontextprotocol/sdk"
