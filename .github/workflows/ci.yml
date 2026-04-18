@@ -83,7 +83,7 @@ jobs:
           nix develop --command bash tests/android-e2e.sh
       - name: Upload test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-e2e-logs
           path: test-logs/
@@ -142,7 +142,7 @@ jobs:
           test "$pass" -gt 0
       - name: Upload test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: browser-e2e-logs
           path: test-logs/
@@ -174,7 +174,7 @@ jobs:
           nix develop --command bash tests/ios-e2e.sh
       - name: Upload test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ios-e2e-logs
           path: test-logs/
@@ -220,7 +220,7 @@ jobs:
           category: gitleaks
       - name: Upload test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: security-gitleaks-logs
           path: test-logs/security/
@@ -264,7 +264,7 @@ jobs:
           category: trivy
       - name: Upload test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: security-trivy-logs
           path: test-logs/security/
@@ -306,7 +306,7 @@ jobs:
           category: semgrep
       - name: Upload test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: security-semgrep-logs
           path: test-logs/security/
@@ -354,7 +354,7 @@ jobs:
           category: snyk
       - name: Upload test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: security-snyk-logs
           path: test-logs/security/
@@ -385,7 +385,7 @@ jobs:
           echo "{\"scanner\":\"sonarcloud\",\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"status\":\"completed\"}" > test-logs/security/sonarcloud.json
       - name: Upload test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: security-sonarcloud-logs
           path: test-logs/security/
