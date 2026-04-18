@@ -53,43 +53,10 @@ if [[ -z "$mcp_browser_bin" ]]; then
   finish_test_run || exit 1
 fi
 
-# mcp-browser wraps @playwright/mcp CLI; pass --browser flag
-# Playwright MCP creates user data dirs inside PLAYWRIGHT_BROWSERS_PATH.
-# In Nix, this path is read-only. Create a writable overlay with symlinks
-# so the browser binaries remain accessible but the dir is writable.
-if [[ -z "${PLAYWRIGHT_BROWSERS_PATH:-}" ]]; then
-  # Extract the default browsers path from the wrapper script
-  PLAYWRIGHT_BROWSERS_PATH=$(grep -oP '/nix/store/[a-z0-9]+-playwright-browsers' "$mcp_browser_bin" | head -1 || true)
-fi
-if [[ -n "$PLAYWRIGHT_BROWSERS_PATH" ]] && [[ ! -w "$PLAYWRIGHT_BROWSERS_PATH" ]]; then
-  _writable_browsers="${TMPDIR:-/tmp}/playwright-browsers-rw"
-  rm -rf "$_writable_browsers"
-  mkdir -p "$_writable_browsers"
-  for item in "$PLAYWRIGHT_BROWSERS_PATH"/*; do
-    [[ -e "$item" ]] && ln -sfn "$item" "$_writable_browsers/$(basename "$item")" 2>/dev/null || true
-  done
-  # Bridge revision gaps between @playwright/mcp's bundled playwright-core
-  # and nixpkgs playwright-driver (e.g., chromium-1207 vs chromium-1208).
-  # Read the expected revisions from browsers.json and create symlinks.
-  _browsers_json="$mcp_browser_bin"
-  _browsers_json=$(dirname "$(readlink -f "$_browsers_json")")
-  _browsers_json=$(find "$(dirname "$_browsers_json")"/lib -name "browsers.json" -path "*/playwright-core/*" 2>/dev/null | head -1 || true)
-  if [[ -n "$_browsers_json" ]] && [[ -f "$_browsers_json" ]]; then
-    while IFS= read -r _entry; do
-      _name=$(printf '%s' "$_entry" | jq -r '.name')
-      _rev=$(printf '%s' "$_entry" | jq -r '.revision')
-      _dir_name="${_name//-/_}-${_rev}"
-      # If the expected dir doesn't exist, look for a close match
-      if [[ ! -e "$_writable_browsers/$_dir_name" ]]; then
-        _match=$(find "$_writable_browsers" -maxdepth 1 -name "${_name//-/_}-*" -print -quit 2>/dev/null || true)
-        if [[ -n "$_match" ]]; then
-          ln -sfn "$(readlink -f "$_match")" "$_writable_browsers/$_dir_name" 2>/dev/null || true
-        fi
-      fi
-    done < <(jq -c '.browsers[]' "$_browsers_json")
-  fi
-  export PLAYWRIGHT_BROWSERS_PATH="$_writable_browsers"
-fi
+# mcp-browser wraps @playwright/mcp CLI; pass --browser flag.
+# The wrapper injects a writable --user-data-dir so we don't need a
+# PLAYWRIGHT_BROWSERS_PATH overlay here — it can point at the read-only
+# Nix store as the wrapper intends.
 # Ensure Chromium runs without sandbox in CI (GitHub Actions runs as root)
 export PLAYWRIGHT_CHROMIUM_SANDBOX=0
 export PLAYWRIGHT_LAUNCH_OPTIONS='{"args":["--no-sandbox","--disable-setuid-sandbox"]}'

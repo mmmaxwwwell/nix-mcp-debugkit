@@ -16,6 +16,20 @@ else
   printf '%s\n' "✓ PLAYWRIGHT_BROWSERS_PATH set: $PLAYWRIGHT_BROWSERS_PATH"
 fi
 
+# Check 1b: user-data-dir base is writable. @playwright/mcp needs to
+# mkdir a profile directory on startup; by default it derives the path
+# from PLAYWRIGHT_BROWSERS_PATH (the Nix store, read-only), which fails
+# with ENOENT. The wrapper injects --user-data-dir to a writable path
+# unless the caller opted into --isolated or their own --user-data-dir.
+udd_base="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}"
+if [ -d "$udd_base" ] && [ -w "$udd_base" ]; then
+  printf '%s\n' "✓ user-data-dir base writable: $udd_base"
+else
+  printf '%s\n' "✗ user-data-dir base not writable: $udd_base"
+  printf '%s\n' "  → Set XDG_RUNTIME_DIR or TMPDIR to a writable directory"
+  failed=1
+fi
+
 # Check 2: Find Chromium binary and attempt headless launch
 if [ "$failed" -eq 0 ]; then
   chromium=""

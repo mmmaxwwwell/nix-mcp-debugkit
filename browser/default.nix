@@ -72,18 +72,30 @@ if [ -z "$chromium_bin" ]; then
   done
 fi
 
-# Inject default --browser / --executable-path only when the caller did
-# not already specify them.  This preserves override semantics for
-# advanced use cases (CDP endpoint, msedge channel, etc.).
+# Inject default --browser / --executable-path / --user-data-dir only
+# when the caller did not already specify them. This preserves override
+# semantics for advanced use cases (CDP endpoint, msedge channel,
+# persistent profile, etc.).
+#
+# --user-data-dir is critical: @playwright/mcp derives the profile
+# directory from PLAYWRIGHT_BROWSERS_PATH (via playwright-core's
+# registryDirectory) and then mkdir's inside it. Under Nix,
+# PLAYWRIGHT_BROWSERS_PATH points at the read-only store, so mkdir fails
+# with ENOENT on first tool call. Injecting a writable --user-data-dir
+# sidesteps this entirely.
 args=("$@")
 has_browser=0
 has_exec_path=0
 has_cdp=0
+has_user_data_dir=0
+has_isolated=0
 for a in "''${args[@]}"; do
   case "$a" in
     --browser|--browser=*) has_browser=1 ;;
     --executable-path|--executable-path=*) has_exec_path=1 ;;
     --cdp-endpoint|--cdp-endpoint=*) has_cdp=1 ;;
+    --user-data-dir|--user-data-dir=*) has_user_data_dir=1 ;;
+    --isolated) has_isolated=1 ;;
   esac
 done
 injected=()
@@ -93,6 +105,18 @@ if [ "$has_cdp" -eq 0 ]; then
   fi
   if [ "$has_exec_path" -eq 0 ] && [ -n "$chromium_bin" ]; then
     injected+=(--executable-path "$chromium_bin")
+  fi
+  # Only inject --user-data-dir when the caller hasn't chosen a profile
+  # strategy. --isolated keeps the profile in memory, which is also
+  # valid; don't override it.
+  if [ "$has_user_data_dir" -eq 0 ] && [ "$has_isolated" -eq 0 ]; then
+    # Prefer XDG_RUNTIME_DIR (tmpfs on most linux systems) but fall back
+    # to TMPDIR/tmp. Namespace by PID so concurrent mcp-browser invocations
+    # don't collide on the same profile.
+    udd_base="''${XDG_RUNTIME_DIR:-''${TMPDIR:-/tmp}}"
+    udd="$udd_base/mcp-browser-profile-$$"
+    mkdir -p "$udd"
+    injected+=(--user-data-dir "$udd")
   fi
 fi
 
