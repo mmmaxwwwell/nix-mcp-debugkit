@@ -85,6 +85,11 @@ python3Packages.buildPythonApplication rec {
     hash = "sha256-pMBC+VH62smwmmjYdSROL0wayZ0uT8JND5jKkdXADfg=";
   };
 
+  # Defer device connection until first tool call so the MCP `initialize`
+  # handshake completes even when the device's atx-agent isn't ready. See
+  # the patch header for the full rationale.
+  patches = [ ./defer-device-init.patch ];
+
   nativeBuildInputs = with python3Packages; [
     hatchling
     pkgs.makeWrapper

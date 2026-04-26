@@ -1,0 +1,98 @@
+--- a/src/android_mcp/__main__.py
++++ b/src/android_mcp/__main__.py
+@@ -5,6 +5,7 @@
+ from android_mcp.mobile.service import Mobile
+ from textwrap import dedent
+ import asyncio
++import threading
+ 
+ parser = ArgumentParser()
+ parser.add_argument('--emulator',action='store_true',help='Use the emulator')
+@@ -22,53 +23,75 @@
+ 
+ mcp=FastMCP(name="Android-MCP",instructions=instructions)
+ 
+-mobile=Mobile(device=None if not args.emulator else 'emulator-5554')
+-device=mobile.get_device()
++# Defer device connection until first tool call. Constructing Mobile() does
++# blocking I/O (uiautomator2 connect + device.info HTTP probe) that can hang
++# indefinitely if the device's atx-agent isn't ready. Doing it at module
++# import time would prevent mcp.run() from answering the JSON-RPC `initialize`
++# handshake, causing MCP clients to time out their launch probe even though
++# the server is alive. Connecting lazily lets the handshake succeed; if the
++# device truly isn't reachable, the failure surfaces as a tool error with a
++# real message instead of a silent hang.
++_mobile_lock = threading.Lock()
++_mobile_singleton: 'Mobile | None' = None
++
++def _mobile() -> Mobile:
++    global _mobile_singleton
++    if _mobile_singleton is None:
++        with _mobile_lock:
++            if _mobile_singleton is None:
++                _mobile_singleton = Mobile(
++                    device=None if not args.emulator else 'emulator-5554'
++                )
++    return _mobile_singleton
++
++def _device():
++    return _mobile().get_device()
+ 
+ @mcp.tool(name='Click-Tool',description='Click on a specific cordinate')
+ def click_tool(x:int,y:int):
+-    device.click(x,y)
++    _device().click(x,y)
+     return f'Clicked on ({x},{y})'
+ 
+ @mcp.tool('State-Tool',description='Get the state of the device. Optionally includes visual screenshot when use_vision=True.')
+ def state_tool(use_vision:bool=False):
+-    mobile_state=mobile.get_state(use_vision=use_vision,as_bytes=True)
++    mobile_state=_mobile().get_state(use_vision=use_vision,as_bytes=True)
+     return [mobile_state.tree_state.to_string()]+([Image(data=mobile_state.screenshot,format='PNG')] if use_vision else [])
+ 
+ @mcp.tool(name='Long-Click-Tool',description='Long click on a specific cordinate')
+ def long_click_tool(x:int,y:int):
+-    device.long_click(x,y)
++    _device().long_click(x,y)
+     return f'Long Clicked on ({x},{y})'
+ 
+ @mcp.tool(name='Swipe-Tool',description='Swipe on a specific cordinate')
+ def swipe_tool(x1:int,y1:int,x2:int,y2:int):
+-    device.swipe(x1,y1,x2,y2)
++    _device().swipe(x1,y1,x2,y2)
+     return f'Swiped from ({x1},{y1}) to ({x2},{y2})'
+ 
+ @mcp.tool(name='Type-Tool',description='Type on a specific cordinate')
+ def type_tool(text:str,x:int,y:int,clear:bool=False):
+-    device.set_fastinput_ime(enable=True)
+-    device.send_keys(text=text,clear=clear)
++    d=_device()
++    d.set_fastinput_ime(enable=True)
++    d.send_keys(text=text,clear=clear)
+     return f'Typed "{text}" on ({x},{y})'
+ 
+ @mcp.tool(name='Drag-Tool',description='Drag from location and drop on another location')
+ def drag_tool(x1:int,y1:int,x2:int,y2:int):
+-    device.drag(x1,y1,x2,y2)
++    _device().drag(x1,y1,x2,y2)
+     return f'Dragged from ({x1},{y1}) and dropped on ({x2},{y2})'
+ 
+ @mcp.tool(name='Press-Tool',description='Press on specific button on the device')
+ def press_tool(button:str):
+-    device.press(button)
++    _device().press(button)
+     return f'Pressed the "{button}" button'
+ 
+ @mcp.tool(name='Notification-Tool',description='Access the notifications seen on the device')
+ def notification_tool():
+-    device.open_notification()
++    _device().open_notification()
+     return 'Accessed notification bar'
+ 
+ @mcp.tool(name='Wait-Tool',description='Wait for a specific amount of time')
+ def wait_tool(duration:int):
+-    device.sleep(duration)
++    _device().sleep(duration)
+     return f'Waited for {duration} seconds'
+ 
+ def main():
